@@ -47,7 +47,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 | IRW-103 | Implement ledger-entry model | complete | 97-test local gate and required Java 21 CI prove debit/credit exclusivity, signed values, observable cutoff mismatch, source uniqueness, V4 constraints, and persistence |
 | IRW-104 | Define CSV and JSON source contracts | complete | JSON/CSV v1 schemas, field/normalization rules, equivalent valid fixtures, five stable invalid cases, 101-test local gate, and required Java 21 CI pass |
 | IRW-105 | Build deterministic smoke-data generator | complete | Strict fixed-seed profile, byte-identical contract v1 JSON/CSV bundle, reconciled counts/totals, committed hash evidence, 109-test local gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30621980323) pass |
-| IRW-106 | Add scenario manifest and test-only oracle | pending | Counts and impacts reconcile while architecture tests prevent application access to the oracle |
+| IRW-106 | Add scenario manifest and test-only oracle | complete | Public manifest and checksum-bound test oracle reconcile 413 logical records, source hashes, totals, clean coverage, and zero expected impact; oracle boundary/JAR exclusion, 113-test gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30622890198) pass |
 | IRW-107 | Build demo and performance dataset profiles | pending | Versioned bounded profiles reproduce declared volumes without committing generated datasets |
 
 Phase 2 exits only when core monetary and identity invariants are tested, the
@@ -169,13 +169,15 @@ records, transition exceptions, or approve resolutions.
 
 ## Current delivery status
 
-IRW-000 through IRW-009 and IRW-100 through IRW-105 are complete. The versioned
+IRW-000 through IRW-009 and IRW-100 through IRW-106 are complete. The versioned
 JSON/CSV contracts now have a bounded Java generator, strict fixed-seed smoke
-profile, and committed byte-reproducible bundle. Its record references and
-financial totals reconcile, artifact hashes are documented, and the 109-test
-local gate plus required Java 21 CI pass. The application foundation remains on
-protected `main`; its PostgreSQL/Flyway migrations, Testcontainers checks, and
-supported Dependabot ecosystems pass. IRW-106 is the next implementation issue.
+profile, committed byte-reproducible bundle, public scenario manifest, and a
+checksum-bound oracle isolated from production. Counts, financial totals,
+scenario coverage, and source hashes reconcile; the 113-test local gate,
+executable-JAR exclusion check, and required Java 21 CI pass. The application
+foundation remains on protected `main`; its PostgreSQL/Flyway migrations,
+Testcontainers checks, and supported Dependabot ecosystems pass. IRW-107 is the
+next implementation issue.
 
 The first meaningful vertical slice remains: generate a deterministic synthetic
 CSV, import it through the API, persist accepted invoices, quarantine invalid

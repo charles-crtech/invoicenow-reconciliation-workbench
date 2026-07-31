@@ -78,7 +78,7 @@ public final class GeneratedDataset {
 
     private static final class SetOrder {
         private static final List<String> EXPECTED = List.of(
-                "dataset.json", "suppliers.csv", "invoices.csv", "ledger_entries.csv");
+                "dataset.json", "suppliers.csv", "invoices.csv", "ledger_entries.csv", "manifest.json");
 
         private SetOrder() {
         }

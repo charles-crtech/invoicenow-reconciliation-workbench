@@ -39,16 +39,16 @@ public final class SyntheticDatasetGenerator {
         Objects.requireNonNull(profile, "generator profile must not be null");
         DatasetModel model = buildModel(profile);
         DatasetSummary summary = summarize(profile, model);
-        return new GeneratedDataset(
-                profile,
-                summary,
-                List.of(
-                        GeneratedArtifact.utf8("dataset.json", renderJson(profile, model)),
-                        GeneratedArtifact.utf8("suppliers.csv", renderSuppliersCsv(profile, model.suppliers())),
-                        GeneratedArtifact.utf8("invoices.csv", renderInvoicesCsv(profile, model.invoices())),
-                        GeneratedArtifact.utf8(
-                                "ledger_entries.csv",
-                                renderLedgerCsv(profile, model.ledgerEntries()))));
+        List<GeneratedArtifact> sourceArtifacts = List.of(
+                GeneratedArtifact.utf8("dataset.json", renderJson(profile, model)),
+                GeneratedArtifact.utf8("suppliers.csv", renderSuppliersCsv(profile, model.suppliers())),
+                GeneratedArtifact.utf8("invoices.csv", renderInvoicesCsv(profile, model.invoices())),
+                GeneratedArtifact.utf8(
+                        "ledger_entries.csv",
+                        renderLedgerCsv(profile, model.ledgerEntries())));
+        List<GeneratedArtifact> bundle = new ArrayList<>(sourceArtifacts);
+        bundle.add(ScenarioManifestArtifact.create(profile, summary, sourceArtifacts));
+        return new GeneratedDataset(profile, summary, bundle);
     }
 
     private static DatasetModel buildModel(GeneratorProfile profile) {
