@@ -1,0 +1,11 @@
+contract_version,dataset_id,supplier_code,display_name,registration_identifier,gst_registered,status
+1.0,smoke-v1-seed-20260731,SUP-001,Synthetic Supplier 001,SYNTH-UEN-000001,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-002,Synthetic Supplier 002,SYNTH-UEN-000002,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-003,Synthetic Supplier 003,SYNTH-UEN-000003,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-004,Synthetic Supplier 004,SYNTH-UEN-000004,false,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-005,Synthetic Supplier 005,SYNTH-UEN-000005,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-006,Synthetic Supplier 006,SYNTH-UEN-000006,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-007,Synthetic Supplier 007,SYNTH-UEN-000007,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-008,Synthetic Supplier 008,SYNTH-UEN-000008,false,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-009,Synthetic Supplier 009,SYNTH-UEN-000009,true,ACTIVE
+1.0,smoke-v1-seed-20260731,SUP-010,Synthetic Supplier 010,SYNTH-UEN-000010,true,ACTIVE
