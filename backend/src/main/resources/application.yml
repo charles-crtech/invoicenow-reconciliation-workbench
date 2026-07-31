@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: invoicenow-workbench
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:invoicenow_workbench}
+    username: ${POSTGRES_USER:invoicenow_app}
+    password: ${POSTGRES_PASSWORD:local_dev_only_change_me}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+
+info:
+  application:
+    name: InvoiceNow Reconciliation Workbench
+    synthetic-data-only: true

@@ -27,7 +27,7 @@ The external sources justify the educational business context. The project requi
 | `REQ-005` | Enforce review roles, valid transitions, and concurrency | SCOPE; enterprise control objective | Exception module, identity module, audit module | State-policy unit tests, authorization tests, stale-version integration test | Approved; not implemented |
 | `REQ-006` | Observe long jobs live and recover after connection loss | SCOPE; target-role full-stack evidence | Import/reconciliation jobs, SSE adapter, React job state | SSE lifecycle tests, reconnect component test, Playwright interruption scenario | Approved; not implemented |
 | `REQ-007` | Enforce permissions and preserve material-action evidence | SCOPE; enterprise security objective | Identity, exception, rules, audit, HTTP security | Role matrix tests, append-only database test, security review | Approved; not implemented |
-| `REQ-008` | Reproduce the environment and evidence from a clean checkout | SCOPE; ARCH; ADR-001 | Build, Compose, Flyway, CI, smoke scripts | Clean-start verification, CI run, release smoke evidence | Approved; not implemented |
+| `REQ-008` | Reproduce the environment and evidence from a clean checkout | SCOPE; ARCH; ADR-001 | Build, Compose, Flyway, CI, smoke scripts | [Application foundation verification](../testing/application-foundation-verification.md), CI run, release smoke evidence | Foundation verified; release evidence pending |
 
 ## Evidence-state meanings
 
