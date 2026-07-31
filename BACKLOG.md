@@ -35,7 +35,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 | IRW-006 | Add PostgreSQL Compose service and Flyway baseline | complete | Healthy PostgreSQL service and empty-database migration evidence from Testcontainers |
 | IRW-007 | Add public health endpoint, smoke test, and CI | complete | Public health contract, protected-route check, six passing tests, and required `Java 21 verify` CI |
 | IRW-008 | Remove inapplicable Docker Dependabot updater | complete | Maven and GitHub Actions update sweeps pass without an unsupported root Docker scan |
-| IRW-009 | Establish implementation backlog ledger | review | `BACKLOG.md` covers every approved roadmap issue once and is linked from the README |
+| IRW-009 | Establish implementation backlog ledger | complete | `BACKLOG.md` covers every approved roadmap issue once and is linked from the README |
 
 ## Phase 2: domain and deterministic data
 
@@ -171,8 +171,8 @@ records, transition exceptions, or approve resolutions.
 
 IRW-000 through IRW-008 are complete. The application foundation is merged on
 protected `main`; its Java 21 verification, PostgreSQL/Flyway migration,
-Testcontainers checks, and supported Dependabot ecosystems pass. IRW-009 is in
-review and IRW-100 is the next implementation issue.
+Testcontainers checks, and supported Dependabot ecosystems pass. The backlog
+ledger is established, and IRW-100 is the next implementation issue.
 
 The first meaningful vertical slice remains: generate a deterministic synthetic
 CSV, import it through the API, persist accepted invoices, quarantine invalid
