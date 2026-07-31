@@ -1,0 +1,61 @@
+{
+  "contract_version": "1.0",
+  "dataset_id": "contract-smoke-001",
+  "suppliers": [
+    {
+      "supplier_code": "SUP-001",
+      "display_name": "Synthetic Orchard, Pte Ltd",
+      "registration_identifier": "SYNTH-UEN-000001",
+      "gst_registered": true,
+      "status": "ACTIVE"
+    }
+  ],
+  "invoices": [
+    {
+      "source_system": "ERP_ONE",
+      "source_record_id": "invoice-row-001",
+      "supplier_code": "SUP-001",
+      "document_number": "INV-001",
+      "document_type": "INVOICE",
+      "issue_date": "2026-07-30",
+      "posting_date": "2026-07-31",
+      "reporting_period_start": "2026-07-01",
+      "reporting_period_end": "2026-08-01",
+      "currency": "SGD",
+      "declared_net": 100.00,
+      "declared_tax": 9.00,
+      "declared_gross": 109.00,
+      "lines": [
+        {
+          "line_number": 1,
+          "description": "Synthetic consulting, July",
+          "item_code": "CONSULT-01",
+          "quantity": 1.0000,
+          "unit_price": 100.00,
+          "net_amount": 100.00,
+          "tax_category": "STANDARD_RATED",
+          "tax_rate": 0.0900,
+          "tax_amount": 9.00,
+          "gross_amount": 109.00,
+          "currency": "SGD"
+        }
+      ]
+    }
+  ],
+  "ledger_entries": [
+    {
+      "source_system": "LEDGER_ONE",
+      "source_record_id": "ledger-row-001",
+      "account_code": "AP.2100",
+      "counterparty_reference": "SUP-001",
+      "document_reference": "INV-001",
+      "posting_date": "2026-07-31",
+      "reporting_period_start": "2026-07-01",
+      "reporting_period_end": "2026-08-01",
+      "currency": "SGD",
+      "debit_amount": 109.00,
+      "credit_amount": 0.00,
+      "tax_amount": 9.00
+    }
+  ]
+}
