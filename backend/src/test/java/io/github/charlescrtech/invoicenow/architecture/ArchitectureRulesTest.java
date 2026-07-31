@@ -7,6 +7,7 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
+import jakarta.persistence.Entity;
 import org.junit.jupiter.api.Test;
 
 class ArchitectureRulesTest {
@@ -45,6 +46,33 @@ class ArchitectureRulesTest {
                         BASE_PACKAGE + ".dashboard..",
                         BASE_PACKAGE + ".audit..",
                         BASE_PACKAGE + ".assistant..");
+
+        rule.check(productionClasses);
+    }
+
+    @Test
+    void supplierDomainMustNotDependOnFrameworkOrOuterLayers() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAPackage(BASE_PACKAGE + ".suppliers.domain..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(
+                        BASE_PACKAGE + ".suppliers.application..",
+                        BASE_PACKAGE + ".suppliers.infrastructure..",
+                        "jakarta.persistence..",
+                        "org.springframework..");
+
+        rule.check(productionClasses);
+    }
+
+    @Test
+    void persistenceEntitiesMustNotBePublicApiTypes() {
+        ArchRule rule = noClasses()
+                .that()
+                .areAnnotatedWith(Entity.class)
+                .should()
+                .bePublic();
 
         rule.check(productionClasses);
     }
