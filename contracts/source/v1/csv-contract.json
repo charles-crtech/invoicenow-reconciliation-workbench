@@ -1,0 +1,75 @@
+{
+  "contract_version": "1.0",
+  "encoding": "UTF-8",
+  "byte_order_mark": false,
+  "delimiter": ",",
+  "quote": "\"",
+  "record_endings": ["LF", "CRLF"],
+  "files": [
+    {
+      "name": "suppliers.csv",
+      "record_type": "supplier",
+      "columns": [
+        { "name": "contract_version", "type": "string", "required": true },
+        { "name": "dataset_id", "type": "string", "required": true },
+        { "name": "supplier_code", "type": "string", "required": true },
+        { "name": "display_name", "type": "string", "required": true },
+        { "name": "registration_identifier", "type": "string", "required": true },
+        { "name": "gst_registered", "type": "boolean", "required": true },
+        { "name": "status", "type": "enum", "required": true }
+      ]
+    },
+    {
+      "name": "invoices.csv",
+      "record_type": "invoice_line",
+      "columns": [
+        { "name": "contract_version", "type": "string", "required": true },
+        { "name": "dataset_id", "type": "string", "required": true },
+        { "name": "source_system", "type": "string", "required": true },
+        { "name": "source_record_id", "type": "string", "required": true },
+        { "name": "supplier_code", "type": "string", "required": true },
+        { "name": "document_number", "type": "string", "required": true },
+        { "name": "document_type", "type": "enum", "required": true },
+        { "name": "issue_date", "type": "date", "required": true },
+        { "name": "posting_date", "type": "date", "required": true },
+        { "name": "reporting_period_start", "type": "date", "required": true },
+        { "name": "reporting_period_end", "type": "date", "required": true },
+        { "name": "currency", "type": "string", "required": true },
+        { "name": "declared_net", "type": "decimal", "required": true },
+        { "name": "declared_tax", "type": "decimal", "required": true },
+        { "name": "declared_gross", "type": "decimal", "required": true },
+        { "name": "line_number", "type": "integer", "required": true },
+        { "name": "description", "type": "string", "required": true },
+        { "name": "item_code", "type": "string", "required": false },
+        { "name": "quantity", "type": "decimal", "required": true },
+        { "name": "unit_price", "type": "decimal", "required": true },
+        { "name": "net_amount", "type": "decimal", "required": true },
+        { "name": "tax_category", "type": "enum", "required": true },
+        { "name": "tax_rate", "type": "decimal", "required": true },
+        { "name": "tax_amount", "type": "decimal", "required": true },
+        { "name": "gross_amount", "type": "decimal", "required": true },
+        { "name": "line_currency", "type": "string", "required": true }
+      ]
+    },
+    {
+      "name": "ledger_entries.csv",
+      "record_type": "ledger_entry",
+      "columns": [
+        { "name": "contract_version", "type": "string", "required": true },
+        { "name": "dataset_id", "type": "string", "required": true },
+        { "name": "source_system", "type": "string", "required": true },
+        { "name": "source_record_id", "type": "string", "required": true },
+        { "name": "account_code", "type": "string", "required": true },
+        { "name": "counterparty_reference", "type": "string", "required": true },
+        { "name": "document_reference", "type": "string", "required": true },
+        { "name": "posting_date", "type": "date", "required": true },
+        { "name": "reporting_period_start", "type": "date", "required": true },
+        { "name": "reporting_period_end", "type": "date", "required": true },
+        { "name": "currency", "type": "string", "required": true },
+        { "name": "debit_amount", "type": "decimal", "required": true },
+        { "name": "credit_amount", "type": "decimal", "required": true },
+        { "name": "tax_amount", "type": "decimal", "required": true }
+      ]
+    }
+  ]
+}

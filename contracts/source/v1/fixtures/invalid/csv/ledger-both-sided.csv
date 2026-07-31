@@ -1,0 +1,2 @@
+contract_version,dataset_id,source_system,source_record_id,account_code,counterparty_reference,document_reference,posting_date,reporting_period_start,reporting_period_end,currency,debit_amount,credit_amount,tax_amount
+1.0,invalid-ledger-side,LEDGER_ONE,row-001,AP.2100,SUP-001,INV-001,2026-07-31,2026-07-01,2026-08-01,SGD,109.00,109.00,9.00

@@ -1,0 +1,2 @@
+contract_version,dataset_id,supplier_code,display_name,registration_identifier,gst_registered,status
+1.0,invalid-live-id,SUP-001,Synthetic Supplier,REAL-UEN-FORBIDDEN,true,ACTIVE

@@ -45,7 +45,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 | IRW-101 | Implement supplier aggregate and migrations | complete | Supplier domain tests plus PostgreSQL constraints and repository integration tests pass |
 | IRW-102 | Implement invoice and invoice-line aggregates | complete | 77-test local gate and required Java 21 CI prove lifecycle, mismatch visibility, supplier linkage, V3 constraints, ordered line persistence, and optimistic versioning |
 | IRW-103 | Implement ledger-entry model | complete | 97-test local gate and required Java 21 CI prove debit/credit exclusivity, signed values, observable cutoff mismatch, source uniqueness, V4 constraints, and persistence |
-| IRW-104 | Define CSV and JSON source contracts | pending | Versioned schemas, field dictionary, normalization rules, and valid/invalid contract fixtures |
+| IRW-104 | Define CSV and JSON source contracts | review | JSON/CSV v1 schemas, field/normalization rules, equivalent valid fixtures, five stable invalid cases, and 101-test local gate pass; PR review pending |
 | IRW-105 | Build deterministic smoke-data generator | pending | Repeated runs with the same seed produce identical records, totals, and checksums |
 | IRW-106 | Add scenario manifest and test-only oracle | pending | Counts and impacts reconcile while architecture tests prevent application access to the oracle |
 | IRW-107 | Build demo and performance dataset profiles | pending | Versioned bounded profiles reproduce declared volumes without committing generated datasets |
@@ -169,11 +169,12 @@ records, transition exceptions, or approve resolutions.
 
 ## Current delivery status
 
-IRW-000 through IRW-009 and IRW-100 through IRW-103 are complete. The immutable
-ledger-entry model, Flyway V4, 97-test local gate, and required Java 21 CI are
-verified. The application foundation remains on protected `main`; its
+IRW-000 through IRW-009 and IRW-100 through IRW-103 are complete. IRW-104 is in
+review with its versioned JSON/CSV schemas, field dictionary, normalization
+rules, fixture evidence, and 101-test local gate implemented. The application
+foundation remains on protected `main`; its Java 21 verification,
 PostgreSQL/Flyway migrations, Testcontainers checks, and supported Dependabot
-ecosystems pass. IRW-104 is the next implementation issue.
+ecosystems pass. IRW-105 follows the IRW-104 merge.
 
 The first meaningful vertical slice remains: generate a deterministic synthetic
 CSV, import it through the API, persist accepted invoices, quarantine invalid

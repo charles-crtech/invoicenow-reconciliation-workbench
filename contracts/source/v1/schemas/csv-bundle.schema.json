@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/charles-crtech/invoicenow-reconciliation-workbench/contracts/source/v1/schemas/csv-bundle.schema.json",
+  "title": "IRW CSV bundle metadata v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version", "encoding", "byte_order_mark", "delimiter", "quote",
+    "record_endings", "files"
+  ],
+  "properties": {
+    "contract_version": { "const": "1.0" },
+    "encoding": { "const": "UTF-8" },
+    "byte_order_mark": { "const": false },
+    "delimiter": { "const": "," },
+    "quote": { "const": "\"" },
+    "record_endings": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [{ "const": "LF" }, { "const": "CRLF" }],
+      "items": false
+    },
+    "files": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/file" }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "record_type", "columns"],
+      "properties": {
+        "name": { "enum": ["suppliers.csv", "invoices.csv", "ledger_entries.csv"] },
+        "record_type": { "enum": ["supplier", "invoice_line", "ledger_entry"] },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/column" }
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "type": { "enum": ["string", "date", "decimal", "integer", "boolean", "enum"] },
+        "required": { "type": "boolean" }
+      }
+    }
+  }
+}

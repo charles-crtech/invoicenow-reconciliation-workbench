@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/charles-crtech/invoicenow-reconciliation-workbench/contracts/source/v1/schemas/dataset.schema.json",
+  "title": "InvoiceNow Reconciliation Workbench synthetic dataset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "dataset_id", "suppliers", "invoices", "ledger_entries"],
+  "properties": {
+    "contract_version": { "const": "1.0" },
+    "dataset_id": { "$ref": "#/$defs/datasetId" },
+    "suppliers": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/supplier" }
+    },
+    "invoices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/invoice" }
+    },
+    "ledger_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ledgerEntry" }
+    }
+  },
+  "$defs": {
+    "datasetId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$"
+    },
+    "sourceSystem": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,31}$"
+    },
+    "sourceRecordId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,99}$"
+    },
+    "normalizedReference": {
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9._/-]{0,63}$"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "money": {
+      "type": "number",
+      "minimum": -999999999999999.9999,
+      "maximum": 999999999999999.9999,
+      "multipleOf": 0.0001
+    },
+    "nonNegativeMoney": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 999999999999999.9999,
+      "multipleOf": 0.0001
+    },
+    "supplier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supplier_code", "display_name", "registration_identifier", "gst_registered", "status"
+      ],
+      "properties": {
+        "supplier_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9_-]{2,31}$"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^\\S(?:.*\\S)?$"
+        },
+        "registration_identifier": {
+          "type": "string",
+          "pattern": "^SYNTH-[A-Z0-9][A-Z0-9-]{2,57}$"
+        },
+        "gst_registered": { "type": "boolean" },
+        "status": { "enum": ["ACTIVE", "INACTIVE", "ARCHIVED"] }
+      }
+    },
+    "invoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_system", "source_record_id", "supplier_code", "document_number",
+        "document_type", "issue_date", "posting_date", "reporting_period_start",
+        "reporting_period_end", "currency", "declared_net", "declared_tax",
+        "declared_gross", "lines"
+      ],
+      "properties": {
+        "source_system": { "$ref": "#/$defs/sourceSystem" },
+        "source_record_id": { "$ref": "#/$defs/sourceRecordId" },
+        "supplier_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9_-]{2,31}$"
+        },
+        "document_number": { "$ref": "#/$defs/normalizedReference" },
+        "document_type": { "enum": ["INVOICE", "CREDIT_NOTE", "DEBIT_NOTE"] },
+        "issue_date": { "$ref": "#/$defs/date" },
+        "posting_date": { "$ref": "#/$defs/date" },
+        "reporting_period_start": { "$ref": "#/$defs/date" },
+        "reporting_period_end": { "$ref": "#/$defs/date" },
+        "currency": { "$ref": "#/$defs/currency" },
+        "declared_net": { "$ref": "#/$defs/money" },
+        "declared_tax": { "$ref": "#/$defs/money" },
+        "declared_gross": { "$ref": "#/$defs/money" },
+        "lines": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/invoiceLine" }
+        }
+      }
+    },
+    "invoiceLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "line_number", "description", "quantity", "unit_price", "net_amount",
+        "tax_category", "tax_rate", "tax_amount", "gross_amount", "currency"
+      ],
+      "properties": {
+        "line_number": { "type": "integer", "minimum": 1 },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "pattern": "^\\S(?:.*\\S)?$"
+        },
+        "item_code": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z0-9][A-Z0-9._/-]{0,63}$"
+        },
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 999999999999999.9999,
+          "multipleOf": 0.0001
+        },
+        "unit_price": { "$ref": "#/$defs/money" },
+        "net_amount": { "$ref": "#/$defs/money" },
+        "tax_category": {
+          "enum": ["STANDARD_RATED", "ZERO_RATED", "EXEMPT", "OUT_OF_SCOPE"]
+        },
+        "tax_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "multipleOf": 0.0001
+        },
+        "tax_amount": { "$ref": "#/$defs/money" },
+        "gross_amount": { "$ref": "#/$defs/money" },
+        "currency": { "$ref": "#/$defs/currency" }
+      }
+    },
+    "ledgerEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_system", "source_record_id", "account_code", "counterparty_reference",
+        "document_reference", "posting_date", "reporting_period_start",
+        "reporting_period_end", "currency", "debit_amount", "credit_amount", "tax_amount"
+      ],
+      "properties": {
+        "source_system": { "$ref": "#/$defs/sourceSystem" },
+        "source_record_id": { "$ref": "#/$defs/sourceRecordId" },
+        "account_code": {
+          "type": "string",
+          "pattern": "^[A-Z0-9][A-Z0-9._-]{2,31}$"
+        },
+        "counterparty_reference": { "$ref": "#/$defs/normalizedReference" },
+        "document_reference": { "$ref": "#/$defs/normalizedReference" },
+        "posting_date": { "$ref": "#/$defs/date" },
+        "reporting_period_start": { "$ref": "#/$defs/date" },
+        "reporting_period_end": { "$ref": "#/$defs/date" },
+        "currency": { "$ref": "#/$defs/currency" },
+        "debit_amount": { "$ref": "#/$defs/nonNegativeMoney" },
+        "credit_amount": { "$ref": "#/$defs/nonNegativeMoney" },
+        "tax_amount": { "$ref": "#/$defs/nonNegativeMoney" }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "debit_amount": { "exclusiveMinimum": 0 },
+            "credit_amount": { "const": 0 }
+          }
+        },
+        {
+          "properties": {
+            "debit_amount": { "const": 0 },
+            "credit_amount": { "exclusiveMinimum": 0 }
+          }
+        }
+      ]
+    }
+  }
+}

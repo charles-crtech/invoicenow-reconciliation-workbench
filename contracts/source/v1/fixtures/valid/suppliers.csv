@@ -1,0 +1,2 @@
+contract_version,dataset_id,supplier_code,display_name,registration_identifier,gst_registered,status
+1.0,contract-smoke-001,SUP-001,"Synthetic Orchard, Pte Ltd",SYNTH-UEN-000001,true,ACTIVE

@@ -1,0 +1,36 @@
+{
+  "contract_version": "1.0",
+  "dataset_id": "invalid-contract-cases",
+  "cases": [
+    {
+      "id": "json-unknown-field",
+      "format": "json",
+      "path": "json/unknown-field.json",
+      "expected_reason_code": "CONTRACT_UNKNOWN_FIELD"
+    },
+    {
+      "id": "json-mixed-line-currency",
+      "format": "json",
+      "path": "json/mixed-line-currency.json",
+      "expected_reason_code": "CONTRACT_CURRENCY_MISMATCH"
+    },
+    {
+      "id": "csv-wrong-invoice-header",
+      "format": "csv",
+      "path": "csv/invoices-wrong-header.csv",
+      "expected_reason_code": "CONTRACT_CSV_HEADER"
+    },
+    {
+      "id": "csv-live-registration",
+      "format": "csv",
+      "path": "csv/suppliers-live-registration.csv",
+      "expected_reason_code": "CONTRACT_SYNTHETIC_ID_REQUIRED"
+    },
+    {
+      "id": "csv-ledger-both-sided",
+      "format": "csv",
+      "path": "csv/ledger-both-sided.csv",
+      "expected_reason_code": "CONTRACT_LEDGER_SIDE"
+    }
+  ]
+}
