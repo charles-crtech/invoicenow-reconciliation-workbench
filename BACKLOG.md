@@ -42,7 +42,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 | ID | Issue | Status | Exit evidence |
 |---|---|---|---|
 | IRW-100 | Implement money, identifiers, and reporting-period value objects | complete | Unit and architecture tests prove currency, scale, rounding, typed identifier, equality, and period-boundary invariants |
-| IRW-101 | Implement supplier aggregate and migrations | pending | Supplier domain tests plus PostgreSQL constraints and repository integration tests pass |
+| IRW-101 | Implement supplier aggregate and migrations | review | Supplier domain tests plus PostgreSQL constraints and repository integration tests pass |
 | IRW-102 | Implement invoice and invoice-line aggregates | pending | Aggregate tests prove line ownership, totals, tax arithmetic, correction rules, and persistence |
 | IRW-103 | Implement ledger-entry model | pending | Debit/credit and reporting-period invariants pass domain and PostgreSQL integration tests |
 | IRW-104 | Define CSV and JSON source contracts | pending | Versioned schemas, field dictionary, normalization rules, and valid/invalid contract fixtures |
