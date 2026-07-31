@@ -83,6 +83,22 @@ class ArchitectureRulesTest {
     }
 
     @Test
+    void reconciliationDomainMustNotDependOnFrameworkOrOuterLayers() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAPackage(BASE_PACKAGE + ".reconciliation.domain..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(
+                        BASE_PACKAGE + ".reconciliation.application..",
+                        BASE_PACKAGE + ".reconciliation.infrastructure..",
+                        "jakarta.persistence..",
+                        "org.springframework..");
+
+        rule.check(productionClasses);
+    }
+
+    @Test
     void persistenceEntitiesMustNotBePublicApiTypes() {
         ArchRule rule = noClasses()
                 .that()
