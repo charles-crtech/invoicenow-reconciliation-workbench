@@ -41,7 +41,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 
 | ID | Issue | Status | Exit evidence |
 |---|---|---|---|
-| IRW-100 | Implement money, identifiers, and reporting-period value objects | review | Unit tests prove currency, scale, rounding, identifier, equality, and period-boundary invariants |
+| IRW-100 | Implement money, identifiers, and reporting-period value objects | complete | Unit and architecture tests prove currency, scale, rounding, typed identifier, equality, and period-boundary invariants |
 | IRW-101 | Implement supplier aggregate and migrations | pending | Supplier domain tests plus PostgreSQL constraints and repository integration tests pass |
 | IRW-102 | Implement invoice and invoice-line aggregates | pending | Aggregate tests prove line ownership, totals, tax arithmetic, correction rules, and persistence |
 | IRW-103 | Implement ledger-entry model | pending | Debit/credit and reporting-period invariants pass domain and PostgreSQL integration tests |
@@ -169,10 +169,10 @@ records, transition exceptions, or approve resolutions.
 
 ## Current delivery status
 
-IRW-000 through IRW-008 are complete. The application foundation is merged on
+IRW-000 through IRW-009 and IRW-100 are complete. The application foundation is merged on
 protected `main`; its Java 21 verification, PostgreSQL/Flyway migration,
-Testcontainers checks, and supported Dependabot ecosystems pass. The backlog
-ledger is established, and IRW-100 is the next implementation issue.
+Testcontainers checks, and supported Dependabot ecosystems pass. The core value
+objects are verified, and IRW-101 is the next implementation issue.
 
 The first meaningful vertical slice remains: generate a deterministic synthetic
 CSV, import it through the API, persist accepted invoices, quarantine invalid

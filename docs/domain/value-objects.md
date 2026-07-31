@@ -1,6 +1,6 @@
 # Core Domain Value Objects
 
-Status: Implemented under `IRW-100`; local verification passed, pull-request CI pending
+Status: Implemented and verified under `IRW-100`
 
 ## Purpose
 
@@ -70,6 +70,8 @@ Executed with the committed Maven Wrapper under Java 21:
 - production architecture rules: 2 tests passed; and
 - complete repository gate: 27 tests passed, with PostgreSQL 18.4/Flyway
   migration integration and executable JAR packaging included.
+
+Pull-request evidence: [GitHub Actions run 30612247734](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30612247734), where `Java 21 verify` passed in 36 seconds.
 
 The host currently lacks a Java installation, so these wrapper commands were
 executed inside a Java 21 container. The full gate mounted the Docker socket for
