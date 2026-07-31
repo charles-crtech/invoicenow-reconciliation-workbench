@@ -1,0 +1,55 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Java and Maven
+backend/target/
+*.class
+*.jar
+*.war
+.mvn/timing.properties
+
+# JavaScript
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
+
+# Python, only if the optional AI service is selected
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+ai-service/.venv/
+
+# Generated or local data
+data/raw/
+data/generated/
+data/performance/
+data/uploads/
+*.csv.tmp
+*.json.tmp
+
+# IDE and operating system
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs and runtime files
+*.log
+logs/
+tmp/
+*.pid
+
+# Test and analysis output
+coverage/
+.scannerwork/
+dependency-check-report.*
