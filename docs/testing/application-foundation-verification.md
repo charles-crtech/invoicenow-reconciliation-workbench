@@ -1,6 +1,6 @@
 # Application Foundation Verification
 
-Status: Local verification passed; pull-request CI pending
+Status: Local and pull-request CI verification passed
 
 Issues: `IRW-005`, `IRW-006`, `IRW-007`
 
@@ -42,6 +42,9 @@ For the Windows host without Java, the same wrapper goal was executed from an Ec
 - The `app` and `audit` schemas and `public.flyway_schema_history` table were verified.
 - Both ArchUnit foundation rules passed.
 - The executable Spring Boot JAR was created.
+- GitHub Actions `Java 21 verify` passed in 48 seconds on the pull request.
+
+CI evidence: [GitHub Actions run 30610176283](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30610176283)
 
 Runtime smoke evidence against the Compose PostgreSQL service:
 
@@ -72,6 +75,5 @@ The current Spring test stack emits a Mockito dynamic-agent warning on Java 21 e
 
 ## Remaining verification
 
-- Run the same Maven `verify` goal in GitHub Actions.
-- Link the successful workflow run to issues `IRW-005` through `IRW-007`.
 - Re-run from a clean checkout after merge.
+- Add release-level evidence when the first deployable product release is tagged.

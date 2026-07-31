@@ -21,7 +21,7 @@ Job descriptions change. This mapping records the postings observed on 31 July 2
 | SQL databases | PostgreSQL migrations, constraints, indexes, Testcontainers evidence | 1-8 | PostgreSQL/Flyway/Testcontainers baseline implemented |
 | Enterprise application development | Requirements, ADRs, SIT/UAT, runbook, release evidence | 0-11 | In progress |
 | Enhancement and troubleshooting | Safe failure modes, correlation IDs, operational runbook | 7-8 | Planned |
-| CI/CD and Docker | Pull-request quality workflow and reproducible containers | 8 | First backend CI workflow implemented; PR run pending |
+| CI/CD and Docker | Pull-request quality workflow and reproducible containers | 8 | First backend CI workflow verified on pull request |
 | Cloud exposure | Tagged deployment, controlled migrations, smoke tests | 8 | Planned |
 | Frontend exposure | React/TypeScript queues, detail screens, and live progress | 5-6 | Planned |
 | NLP/ML/GenAI | Optional anomaly queue and grounded reviewer-assistance workflow | 9-10 | Planned |
