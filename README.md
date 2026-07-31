@@ -8,7 +8,7 @@ The workbench will ingest synthetic invoice, procurement, ledger, and Peppol-sty
 
 ## Current status
 
-Foundation phase: product scope, governance, source register, requirements, architecture, and the modular-monolith decision are documented. Application code has not yet been scaffolded.
+Application-foundation phase: product scope, governance, source evidence, requirements, and architecture are documented. The Java 21/Spring Boot backend, PostgreSQL/Flyway baseline, public health contract, Testcontainers smoke tests, and first CI workflow are being established.
 
 Tracked foundation work:
 
@@ -17,6 +17,9 @@ Tracked foundation work:
 - `IRW-002`: regulatory source register and reuse review
 - `IRW-003`: MVP requirements and traceability
 - `IRW-004`: architecture diagrams and ADR-001
+- `IRW-005`: Spring Boot and Maven quality foundation
+- `IRW-006`: PostgreSQL Compose and Flyway baseline
+- `IRW-007`: public health, Testcontainers, and CI
 
 ## Portfolio objective
 
@@ -61,6 +64,7 @@ Architecture details:
 - [Source reuse review](docs/regulatory/reuse-review.md)
 - [MVP requirements](docs/requirements/mvp-requirements.md)
 - [Requirements traceability matrix](docs/requirements/traceability-matrix.md)
+- [Application foundation verification](docs/testing/application-foundation-verification.md)
 - [Security policy](SECURITY.md)
 - [Contribution workflow](CONTRIBUTING.md)
 
@@ -90,7 +94,31 @@ Dependency versions will be selected and pinned during `IRW-005`; this document 
 
 ## Local setup
 
-Application setup will be added in `IRW-005` through `IRW-007`. Until then, this repository contains the reviewed project foundation only.
+Prerequisites:
+
+- Java 21
+- a Docker-compatible container runtime
+
+Start PostgreSQL:
+
+```powershell
+docker compose up -d postgres
+```
+
+Verify the backend:
+
+```powershell
+cd backend
+.\mvnw.cmd --batch-mode --no-transfer-progress verify
+```
+
+Run the API:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Then request `GET http://localhost:8080/api/v1/health/public`. See the [backend guide](backend/README.md) for configuration and Unix-like commands.
 
 ## Licence
 

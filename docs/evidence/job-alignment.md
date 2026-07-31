@@ -15,13 +15,13 @@ Job descriptions change. This mapping records the postings observed on 31 July 2
 
 | Role signal | Planned repository evidence | Phase | Status |
 |---|---|---:|---|
-| Core Java and object-oriented design | Domain value objects, aggregates, policies, architecture tests | 1-4 | Planned |
-| Spring Boot / Spring Framework | REST API, persistence, validation, security, health endpoints | 1-7 | Planned |
+| Core Java and object-oriented design | Domain value objects, aggregates, policies, architecture tests | 1-4 | Foundation architecture tests implemented; domain evidence planned |
+| Spring Boot / Spring Framework | REST API, persistence, validation, security, health endpoints | 1-7 | Application and bounded health foundation implemented |
 | REST APIs and integrations | Versioned OpenAPI, typed client, import and optional AI service contracts | 1-10 | Planned |
-| SQL databases | PostgreSQL migrations, constraints, indexes, Testcontainers evidence | 1-8 | Planned |
+| SQL databases | PostgreSQL migrations, constraints, indexes, Testcontainers evidence | 1-8 | PostgreSQL/Flyway/Testcontainers baseline implemented |
 | Enterprise application development | Requirements, ADRs, SIT/UAT, runbook, release evidence | 0-11 | In progress |
 | Enhancement and troubleshooting | Safe failure modes, correlation IDs, operational runbook | 7-8 | Planned |
-| CI/CD and Docker | Pull-request quality workflow and reproducible containers | 8 | Planned |
+| CI/CD and Docker | Pull-request quality workflow and reproducible containers | 8 | First backend CI workflow implemented; PR run pending |
 | Cloud exposure | Tagged deployment, controlled migrations, smoke tests | 8 | Planned |
 | Frontend exposure | React/TypeScript queues, detail screens, and live progress | 5-6 | Planned |
 | NLP/ML/GenAI | Optional anomaly queue and grounded reviewer-assistance workflow | 9-10 | Planned |
