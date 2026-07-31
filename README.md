@@ -59,6 +59,7 @@ Architecture details:
 
 ## Documentation map
 
+- [Implementation backlog](BACKLOG.md)
 - [Product scope](docs/product-scope.md)
 - [Regulatory source register](docs/regulatory/source-register.md)
 - [Source reuse review](docs/regulatory/reuse-review.md)
