@@ -1,0 +1,13 @@
+{
+  "profile_version": "1.0",
+  "profile_name": "performance",
+  "dataset_id": "performance-v1-seed-20260802",
+  "seed": 20260802,
+  "supplier_count": 2000,
+  "invoice_count": 100000,
+  "max_lines_per_invoice": 5,
+  "reporting_period_start": "2026-07-01",
+  "reporting_period_end": "2026-08-01",
+  "currency": "SGD",
+  "tax_rate": 0.0900
+}
