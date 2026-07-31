@@ -99,6 +99,22 @@ class ArchitectureRulesTest {
     }
 
     @Test
+    void importDomainMustNotDependOnFrameworkOrOuterLayers() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAPackage(BASE_PACKAGE + ".imports.domain..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(
+                        BASE_PACKAGE + ".imports.application..",
+                        BASE_PACKAGE + ".imports.infrastructure..",
+                        "jakarta..",
+                        "org.springframework..");
+
+        rule.check(productionClasses);
+    }
+
+    @Test
     void persistenceEntitiesMustNotBePublicApiTypes() {
         ArchRule rule = noClasses()
                 .that()

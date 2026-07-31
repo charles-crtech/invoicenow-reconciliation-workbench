@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: InvoiceNow Reconciliation Workbench API
+  version: 1.0.0
+  description: >-
+    API for synthetic educational reconciliation workflows. This contract does
+    not represent an accredited InvoiceNow service or tax advice.
+servers:
+  - url: /
+paths:
+  /api/v1/health/public:
+    get:
+      operationId: getPublicHealth
+      security: []
+      responses:
+        "200":
+          description: Bounded public service status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicHealth"
+  /api/v1/import-batches:
+    post:
+      operationId: registerImportBatch
+      summary: Register a bounded source fingerprint exactly once
+      description: >-
+        The source and manifest checksums are calculated by a bounded upload
+        adapter before this registration command. No raw source payload is
+        accepted by or returned from this endpoint.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            pattern: "^[A-Za-z0-9._:-]{8,128}$"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterImportBatchRequest"
+      responses:
+        "201":
+          description: New import batch registered
+          headers:
+            Location:
+              schema: { type: string }
+            Idempotent-Replay:
+              schema: { type: string, const: "false" }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportBatch"
+        "200":
+          description: Existing governed outcome returned for replay
+          headers:
+            Location:
+              schema: { type: string }
+            Idempotent-Replay:
+              schema: { type: string, const: "true" }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportBatch"
+        "400":
+          $ref: "#/components/responses/InvalidImportRequest"
+        "401":
+          description: Authentication required
+        "403":
+          description: Analyst role required
+        "409":
+          description: Idempotency key is bound to a different request
+          x-error-code: IMPORT_IDEMPOTENCY_CONFLICT
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/import-batches/{batchId}:
+    get:
+      operationId: getImportBatch
+      security:
+        - basicAuth: []
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Bounded import-batch metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportBatch"
+        "400":
+          $ref: "#/components/responses/InvalidImportRequest"
+        "401":
+          description: Authentication required
+        "403":
+          description: Import-batch read role required
+        "404":
+          description: Import batch not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Temporary API mechanism; seeded demo identities are deferred to IRW-500.
+  responses:
+    InvalidImportRequest:
+      description: Invalid or unsupported bounded metadata
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+  schemas:
+    PublicHealth:
+      type: object
+      additionalProperties: false
+      required: [status, service]
+      properties:
+        status: { type: string, const: UP }
+        service: { type: string, const: invoicenow-workbench-api }
+    RegisterImportBatchRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - datasetId
+        - contractVersion
+        - sourceType
+        - sourceName
+        - contentType
+        - sourceSizeBytes
+        - sourceSha256
+        - manifestSha256
+      properties:
+        datasetId:
+          type: string
+          pattern: "^[a-z0-9][a-z0-9._-]{2,63}$"
+        contractVersion: { type: string, const: "1.0" }
+        sourceType: { type: string, enum: [CSV, JSON] }
+        sourceName: { type: string, minLength: 1, maxLength: 255 }
+        contentType: { type: string, enum: [text/csv, application/json] }
+        sourceSizeBytes:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 268435456
+        sourceSha256:
+          type: string
+          pattern: "^[0-9a-f]{64}$"
+        manifestSha256:
+          type: string
+          pattern: "^[0-9a-f]{64}$"
+    ImportBatch:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - datasetId
+        - contractVersion
+        - sourceType
+        - sourceName
+        - contentType
+        - sourceSizeBytes
+        - sourceSha256
+        - manifestSha256
+        - status
+        - acceptedCount
+        - rejectedCount
+        - quarantinedCount
+        - createdAt
+        - version
+        - replayed
+      properties:
+        id: { type: string, format: uuid }
+        datasetId: { type: string }
+        contractVersion: { type: string }
+        sourceType: { type: string, enum: [CSV, JSON] }
+        sourceName: { type: string }
+        contentType: { type: string }
+        sourceSizeBytes: { type: integer, format: int64 }
+        sourceSha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        manifestSha256: { type: string, pattern: "^[0-9a-f]{64}$" }
+        status: { type: string, enum: [REGISTERED, PROCESSING, COMPLETED, FAILED] }
+        acceptedCount: { type: integer, format: int64, minimum: 0 }
+        rejectedCount: { type: integer, format: int64, minimum: 0 }
+        quarantinedCount: { type: integer, format: int64, minimum: 0 }
+        createdAt: { type: string, format: date-time }
+        version: { type: integer, format: int64, minimum: 0 }
+        replayed: { type: boolean }
+    Problem:
+      type: object
+      required: [type, title, status, detail, code, requestId]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        code: { type: string }
+        requestId: { type: string }

@@ -12,6 +12,11 @@ IRW-201, and IRW-202 must define and test the stable byte/canonicalization scope
 for each serialization, then compute SHA-256 from the captured original record.
 The source cannot truthfully provide a self-hash without a circular contract.
 
+IRW-200 defines the batch-level checksum as SHA-256 over the exact uploaded
+artifact bytes before decoding or normalization; no line-ending, whitespace, or
+JSON canonicalization occurs. IRW-201 and IRW-202 separately define the exact
+captured logical-record bytes used for `source_payload_hash`.
+
 ## String normalization
 
 1. Decode strict UTF-8; reject malformed byte sequences and a UTF-8 BOM.

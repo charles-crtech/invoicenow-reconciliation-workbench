@@ -58,7 +58,7 @@ import pipeline without hidden test-only data.
 
 | ID | Issue | Status | Exit evidence |
 |---|---|---|---|
-| IRW-200 | Implement import-batch API and idempotency | pending | Authorized checksum replay returns the governed outcome without duplicating business records |
+| IRW-200 | Implement import-batch API and idempotency | in progress | Authorized checksum replay returns the governed outcome without duplicating business records |
 | IRW-201 | Implement bounded CSV parser and quarantine | pending | Streaming limits, stable reason codes, rollback, and accepted/rejected/quarantined reconciliation tests pass |
 | IRW-202 | Implement bounded JSON parser and quarantine | pending | Versioned JSON parsing enforces the same safety, lineage, and count invariants as CSV |
 | IRW-203 | Add asynchronous job state and progress | pending | Durable job states, safe failures, restart behaviour, and status-resource tests pass |

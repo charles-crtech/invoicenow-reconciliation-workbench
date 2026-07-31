@@ -20,7 +20,7 @@ The external sources justify the educational business context. The project requi
 
 | Requirement | Business statement | Source basis | Planned components | Planned evidence | Status |
 |---|---|---|---|---|---|
-| `REQ-001` | Import synthetic source records once and retain diagnosable rejects | SCOPE; IRAS-GUIDE for invoice-data context | Import module, invoice module, PostgreSQL, batch UI | Import API tests, Testcontainers idempotency/quarantine tests, manifest reconciliation | Approved; not implemented |
+| `REQ-001` | Import synthetic source records once and retain diagnosable rejects | SCOPE; IRAS-GUIDE for invoice-data context | Import module, invoice module, PostgreSQL, batch UI | Import API tests, Testcontainers idempotency/quarantine tests, manifest reconciliation | In progress; batch registration and checksum idempotency implemented, parsing/quarantine pending |
 | `REQ-002` | Reconcile invoices, ledger, and period totals without hiding differences | SCOPE; IRAS-WEB/IRAS-GUIDE for reporting transaction context | Control module, reconciliation module, exception module | Rule unit tests, seeded scenario tests, reconciliation integration tests | Approved; not implemented |
 | `REQ-003` | Prioritize work through server-side queue operations | SCOPE; target-role API/SQL evidence | Exception query API, PostgreSQL indexes, React queue | Combined-query integration tests, query plan, component/Playwright tests | Approved; not implemented |
 | `REQ-004` | Inspect source, rule, calculation, and lineage before deciding | SCOPE; IRAS-WEB/IRAS-GUIDE citations | Invoice, controls, reconciliation, exception, audit, React detail | Detail contract tests, lineage integration test, UAT case | Approved; not implemented |
@@ -32,6 +32,7 @@ The external sources justify the educational business context. The project requi
 ## Evidence-state meanings
 
 - `Approved; not implemented`: requirement and acceptance criteria are accepted, but no implementation claim is made.
+- `In progress`: a tested requirement slice exists, but remaining acceptance behaviour is explicitly identified.
 - `Implemented`: code exists and narrow automated tests pass.
 - `Verified`: the full required quality gate passes and evidence links are recorded.
 - `Released`: evidence belongs to a tagged release matching the deployed demo.
