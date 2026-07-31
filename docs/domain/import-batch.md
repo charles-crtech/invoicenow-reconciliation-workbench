@@ -55,9 +55,10 @@ than committing credentials.
 
 ## Current boundary
 
-Registration remains metadata-only. The separate analyst-only CSV operation now
-streams one exact contract-v1 artifact, verifies it against the registration,
-persists accepted domain records, and retains safe quarantine evidence under the
-[CSV import policy](csv-import-and-quarantine.md). JSON parsing is `IRW-202`, and
-durable asynchronous progress is `IRW-203`; `REQ-001` therefore remains in
-progress rather than complete.
+Registration remains metadata-only. Separate analyst-only CSV and JSON
+operations stream exact contract-v1 artifacts, verify them against registration,
+persist accepted domain records, and retain safe quarantine evidence under the
+[CSV policy](csv-import-and-quarantine.md) and
+[JSON policy](json-import-and-quarantine.md). Durable asynchronous progress and
+the minimal batch UI remain `IRW-203` and Phase 6 work; `REQ-001` therefore
+remains in progress rather than complete.

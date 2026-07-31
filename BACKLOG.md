@@ -60,7 +60,7 @@ import pipeline without hidden test-only data.
 |---|---|---|---|
 | IRW-200 | Implement import-batch API and idempotency | complete | Atomic key/checksum replay and conflicts, protected APIs, V5 constraints, and exact-byte hash boundaries pass the 136-test local gate and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30625169287) |
 | IRW-201 | Implement bounded CSV parser and quarantine | complete | Dependency-free streaming bounds, stable quarantine, transactional rollback, safe APIs, 413-unit smoke reconciliation, 158-test local gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30627436695) pass |
-| IRW-202 | Implement bounded JSON parser and quarantine | pending | Versioned JSON parsing enforces the same safety, lineage, and count invariants as CSV |
+| IRW-202 | Implement bounded JSON parser and quarantine | complete | Strict bounded streaming, canonical logical lineage, V7 stable quarantine, atomic rollback/replay, 413-unit JSON parity, 176-test local gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30629889781) pass |
 | IRW-203 | Add asynchronous job state and progress | pending | Durable job states, safe failures, restart behaviour, and status-resource tests pass |
 | IRW-204 | Implement rule definitions and versioning | pending | Historical executions retain immutable rule versions and source citations |
 | IRW-205 | Implement document identity and duplicate rules | pending | Pass, fail, not-applicable, duplicate, and boundary cases are covered |
@@ -169,22 +169,23 @@ records, transition exceptions, or approve resolutions.
 
 ## Current delivery status
 
-IRW-000 through IRW-009, IRW-100 through IRW-107, and IRW-200 through IRW-201
+IRW-000 through IRW-009, IRW-100 through IRW-107, and IRW-200 through IRW-202
 are complete. The versioned JSON/CSV contracts have deterministic smoke, demo,
 and functional-scale profiles with public manifests and a checksum-bound oracle
 isolated from production. Import registration, atomic idempotency, dependency-free
-bounded CSV streaming, transactional accepted-record persistence, stable durable
-quarantine, role-protected APIs, and safe problem responses pass the 158-test
-local gate and required Java 21 CI. The smoke CSV batches persist 10 suppliers,
-100 invoices, 203 lines, and 100 ledger entries as 413 accepted source units.
-Phase 2 is complete, the CSV path of Phase 3 is established, and IRW-202 is the
-next implementation issue.
+bounded CSV and Jackson token-stream JSON ingestion, deterministic logical lineage,
+transactional accepted-record persistence, stable durable quarantine,
+role-protected APIs, and safe problem responses pass the 176-test local gate and
+required Java 21 CI. Equivalent smoke CSV and JSON imports each persist 10
+suppliers, 100 invoices, 203 lines, and 100 ledger entries as 413 accepted source
+units. Phase 2 is complete, both source paths of Phase 3 are established, and
+IRW-203 is the next implementation issue.
 
-The first meaningful vertical slice remains: generate a deterministic synthetic
-CSV, import it through the API, persist accepted invoices, quarantine invalid
-rows, and show the completed batch in a minimal React page. Domain invariants are
-implemented first so this slice does not embed financial decisions in parsers,
-controllers, or the browser.
+The backend import slice now generates deterministic synthetic data, imports
+either serialization through protected APIs, persists accepted aggregates, and
+quarantines invalid records. The next vertical slice adds durable asynchronous
+progress and shows the completed batch in a minimal React page without moving
+financial decisions into controllers or the browser.
 
 ## Portfolio claim boundary
 

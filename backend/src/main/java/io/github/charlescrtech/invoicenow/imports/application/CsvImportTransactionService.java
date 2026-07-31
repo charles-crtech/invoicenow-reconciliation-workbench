@@ -89,12 +89,44 @@ public class CsvImportTransactionService {
 
         long accepted = switch (plan.kind()) {
             case SUPPLIERS -> importSuppliers(processing, plan.suppliers(), quarantined, now);
-            case INVOICES -> importInvoices(processing, plan.invoiceLines(), quarantined, now);
+            case INVOICES -> importInvoices(processing, plan.invoiceLines(), Map.of(), quarantined, now);
             case LEDGER_ENTRIES -> importLedger(processing, plan.ledgerEntries(), quarantined, now);
         };
         quarantine.saveAll(quarantined);
         ImportBatch completed = processing.complete(accepted, 0, quarantined.size(), clock.instant());
         return batches.update(completed).orElseThrow(CsvImportTransactionService::concurrentChange);
+    }
+
+    @Transactional
+    public ImportBatch commitJson(ImportBatchId batchId, JsonImportPlan plan) {
+        ImportBatch registered = batches.findById(batchId)
+                .orElseThrow(ImportBatchNotFoundException::new);
+        if (registered.status() != ImportBatchStatus.REGISTERED) {
+            throw new JsonImportException(
+                    "IMPORT_BATCH_STATE_CONFLICT", false, "import batch is not registered");
+        }
+        Instant now = clock.instant();
+        ImportBatch processing = batches.update(registered.start(now))
+                .orElseThrow(CsvImportTransactionService::concurrentJsonChange);
+
+        List<QuarantineRecord> quarantined = new ArrayList<>();
+        for (CsvImportPlan.RejectedRow row : plan.rejectedRows()) {
+            quarantined.add(quarantine(
+                    processing, row.source(), row.recordType(), row.reason(), row.fieldName(), now));
+        }
+        Map<InvoiceKey, CsvImportPlan.SourceRecord> invoiceSources = new LinkedHashMap<>();
+        for (JsonImportPlan.InvoiceSource source : plan.invoiceSources()) {
+            invoiceSources.put(
+                    new InvoiceKey(source.sourceSystem(), source.sourceRecordId()),
+                    source.source());
+        }
+
+        long accepted = importSuppliers(processing, plan.suppliers(), quarantined, now);
+        accepted += importInvoices(processing, plan.invoiceLines(), invoiceSources, quarantined, now);
+        accepted += importLedger(processing, plan.ledgerEntries(), quarantined, now);
+        quarantine.saveAll(quarantined);
+        ImportBatch completed = processing.complete(accepted, 0, quarantined.size(), clock.instant());
+        return batches.update(completed).orElseThrow(CsvImportTransactionService::concurrentJsonChange);
     }
 
     private long importSuppliers(
@@ -144,6 +176,7 @@ public class CsvImportTransactionService {
     private long importInvoices(
             ImportBatch batch,
             List<CsvImportPlan.InvoiceLineRow> rows,
+            Map<InvoiceKey, CsvImportPlan.SourceRecord> invoiceSources,
             List<QuarantineRecord> quarantined,
             Instant now) {
         Map<InvoiceKey, List<CsvImportPlan.InvoiceLineRow>> groups = new LinkedHashMap<>();
@@ -155,6 +188,7 @@ public class CsvImportTransactionService {
         Set<String> documentIdentities = new HashSet<>();
         for (List<CsvImportPlan.InvoiceLineRow> group : groups.values()) {
             CsvImportPlan.InvoiceLineRow header = group.getFirst();
+            InvoiceKey invoiceKey = new InvoiceKey(header.sourceSystem(), header.sourceRecordId());
             try {
                 requireMatchingHeaders(group, header);
                 String documentIdentity = header.sourceSystem() + "|" + header.supplierCode()
@@ -199,16 +233,21 @@ public class CsvImportTransactionService {
                         Money.of(header.declaredNet(), header.currency()),
                         Money.of(header.declaredTax(), header.currency()),
                         Money.of(header.declaredGross(), header.currency()),
-                        groupHash(group),
+                        invoiceSources.containsKey(invoiceKey)
+                                ? invoiceSources.get(invoiceKey).hash()
+                                : groupHash(group),
                         lines,
                         now);
                 invoices.save(invoice);
                 accepted += group.size() + 1L;
             } catch (RowMappingFailure failure) {
-                quarantineInvoiceGroup(batch, group, quarantined, failure.reason, failure.fieldName, now);
+                quarantineInvoiceGroup(
+                        batch, group, invoiceSources.get(invoiceKey), quarantined,
+                        failure.reason, failure.fieldName, now);
             } catch (IllegalArgumentException failure) {
                 quarantineInvoiceGroup(
-                        batch, group, quarantined, QuarantineReason.CONTRACT_VALUE_INVALID, null, now);
+                        batch, group, invoiceSources.get(invoiceKey), quarantined,
+                        QuarantineReason.CONTRACT_VALUE_INVALID, null, now);
             }
         }
         return accepted;
@@ -295,6 +334,7 @@ public class CsvImportTransactionService {
     private static void quarantineInvoiceGroup(
             ImportBatch batch,
             List<CsvImportPlan.InvoiceLineRow> group,
+            CsvImportPlan.SourceRecord invoiceSource,
             List<QuarantineRecord> quarantined,
             QuarantineReason reason,
             String fieldName,
@@ -302,8 +342,10 @@ public class CsvImportTransactionService {
         for (CsvImportPlan.InvoiceLineRow row : group) {
             quarantined.add(quarantine(batch, row.source(), "INVOICE_LINE", reason, fieldName, now));
         }
-        CsvImportPlan.SourceRecord first = group.getFirst().source();
-        quarantined.add(quarantine(batch, first, "INVOICE", reason, fieldName, now));
+        CsvImportPlan.SourceRecord header = invoiceSource == null
+                ? group.getFirst().source()
+                : invoiceSource;
+        quarantined.add(quarantine(batch, header, "INVOICE", reason, fieldName, now));
     }
 
     private static QuarantineRecord quarantine(
@@ -328,6 +370,11 @@ public class CsvImportTransactionService {
 
     private static CsvImportException concurrentChange() {
         return new CsvImportException(
+                "IMPORT_BATCH_STATE_CONFLICT", false, "import batch changed concurrently");
+    }
+
+    private static JsonImportException concurrentJsonChange() {
+        return new JsonImportException(
                 "IMPORT_BATCH_STATE_CONFLICT", false, "import batch changed concurrently");
     }
 
