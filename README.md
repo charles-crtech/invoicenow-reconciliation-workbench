@@ -8,7 +8,7 @@ The workbench will ingest synthetic invoice, procurement, ledger, and Peppol-sty
 
 ## Current status
 
-Domain-foundation phase: the Java 21/Spring Boot backend, PostgreSQL/Flyway baseline, public health contract, Testcontainers smoke tests, and required CI workflow are established and verified. Fixed-precision money, typed core identifiers, reporting periods, suppliers, invoices, invoice lines, and immutable ledger entries have constrained PostgreSQL persistence and executable tests. Versioned JSON/CSV source contracts and fixtures are implemented and tested; the deterministic generator is next.
+Domain-foundation phase: the Java 21/Spring Boot backend, PostgreSQL/Flyway baseline, public health contract, Testcontainers smoke tests, and required CI workflow are established and verified. Fixed-precision money, typed core identifiers, reporting periods, suppliers, invoices, invoice lines, and immutable ledger entries have constrained PostgreSQL persistence and executable tests. Versioned JSON/CSV source contracts and fixtures are implemented and tested. A bounded, deterministic Java generator now reproduces the committed clean smoke bundle from a fixed seed; scenario-oracle work follows.
 
 Tracked foundation work:
 
@@ -66,6 +66,8 @@ Architecture details:
 - [MVP requirements](docs/requirements/mvp-requirements.md)
 - [Requirements traceability matrix](docs/requirements/traceability-matrix.md)
 - [Synthetic source contract v1](contracts/source/v1/README.md)
+- [Synthetic-data generator](generator/README.md)
+- [Synthetic dataset policy](data/README.md)
 - [Application foundation verification](docs/testing/application-foundation-verification.md)
 - [Security policy](SECURITY.md)
 - [Contribution workflow](CONTRIBUTING.md)
