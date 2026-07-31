@@ -37,7 +37,8 @@ class SyntheticDatasetGeneratorTest {
 
         assertThat(first.summary()).isEqualTo(second.summary());
         assertThat(first.artifacts()).extracting(GeneratedArtifact::name)
-                .containsExactly("dataset.json", "suppliers.csv", "invoices.csv", "ledger_entries.csv");
+                .containsExactly(
+                        "dataset.json", "suppliers.csv", "invoices.csv", "ledger_entries.csv", "manifest.json");
         for (GeneratedArtifact artifact : first.artifacts()) {
             GeneratedArtifact repeated = second.artifact(artifact.name());
             assertThat(repeated.content()).containsExactly(artifact.content());
@@ -181,7 +182,12 @@ class SyntheticDatasetGeneratorTest {
         assertThat(output).isDirectoryContaining(path -> path.getFileName().toString().equals("dataset.json"));
         try (Stream<Path> files = Files.list(output)) {
             assertThat(files.map(path -> path.getFileName().toString()).toList())
-                    .containsExactlyInAnyOrder("dataset.json", "suppliers.csv", "invoices.csv", "ledger_entries.csv")
+                    .containsExactlyInAnyOrder(
+                            "dataset.json",
+                            "suppliers.csv",
+                            "invoices.csv",
+                            "ledger_entries.csv",
+                            "manifest.json")
                     .noneMatch(name -> name.endsWith(".tmp"));
         }
         for (GeneratedArtifact artifact : dataset.artifacts()) {

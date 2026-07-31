@@ -108,4 +108,14 @@ class ArchitectureRulesTest {
 
         rule.check(productionClasses);
     }
+
+    @Test
+    void productionCodeMustNotAccessTheTestOnlyScenarioOracle() {
+        ArchRule rule = noClasses()
+                .should()
+                .dependOnClassesThat()
+                .resideInAPackage(BASE_PACKAGE + ".generator.oracle..");
+
+        rule.check(productionClasses);
+    }
 }

@@ -1,0 +1,20 @@
+{
+  "oracle_version": "1.0",
+  "dataset_id": "smoke-v1-seed-20260731",
+  "manifest_sha256": "5df9ddd9975a7008f2d0e4ad5bdc3c33625e4a0b881c3e2be0a01f68117dd2e1",
+  "expected_import": {
+    "accepted": {
+      "suppliers": 10,
+      "invoices": 100,
+      "invoice_lines": 203,
+      "ledger_entries": 100
+    },
+    "rejected_record_count": 0,
+    "quarantined_record_count": 0
+  },
+  "expected_reconciliation": {
+    "matched_invoice_count": 100,
+    "unexplained_difference": 0.00,
+    "expected_exceptions": []
+  }
+}
