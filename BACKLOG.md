@@ -59,7 +59,7 @@ import pipeline without hidden test-only data.
 | ID | Issue | Status | Exit evidence |
 |---|---|---|---|
 | IRW-200 | Implement import-batch API and idempotency | complete | Atomic key/checksum replay and conflicts, protected APIs, V5 constraints, and exact-byte hash boundaries pass the 136-test local gate and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30625169287) |
-| IRW-201 | Implement bounded CSV parser and quarantine | in progress | Streaming limits, stable reason codes, rollback, and accepted/rejected/quarantined reconciliation tests pass |
+| IRW-201 | Implement bounded CSV parser and quarantine | complete | Dependency-free streaming bounds, stable quarantine, transactional rollback, safe APIs, 413-unit smoke reconciliation, 158-test local gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30627436695) pass |
 | IRW-202 | Implement bounded JSON parser and quarantine | pending | Versioned JSON parsing enforces the same safety, lineage, and count invariants as CSV |
 | IRW-203 | Add asynchronous job state and progress | pending | Durable job states, safe failures, restart behaviour, and status-resource tests pass |
 | IRW-204 | Implement rule definitions and versioning | pending | Historical executions retain immutable rule versions and source citations |
@@ -169,14 +169,16 @@ records, transition exceptions, or approve resolutions.
 
 ## Current delivery status
 
-IRW-000 through IRW-009, IRW-100 through IRW-107, and IRW-200 are complete. The
-versioned JSON/CSV contracts have deterministic smoke, demo, and functional-scale
-profiles with public manifests and a checksum-bound oracle isolated from
-production. Import-batch registration now adds atomic exact-byte checksum and
-idempotency decisions, constrained PostgreSQL storage, role-protected APIs, and
-safe problem responses. The 136-test local gate and required Java 21 CI pass.
-Phase 2 is complete, the Phase 3 batch boundary is established, and IRW-201 is
-the next implementation issue.
+IRW-000 through IRW-009, IRW-100 through IRW-107, and IRW-200 through IRW-201
+are complete. The versioned JSON/CSV contracts have deterministic smoke, demo,
+and functional-scale profiles with public manifests and a checksum-bound oracle
+isolated from production. Import registration, atomic idempotency, dependency-free
+bounded CSV streaming, transactional accepted-record persistence, stable durable
+quarantine, role-protected APIs, and safe problem responses pass the 158-test
+local gate and required Java 21 CI. The smoke CSV batches persist 10 suppliers,
+100 invoices, 203 lines, and 100 ledger entries as 413 accepted source units.
+Phase 2 is complete, the CSV path of Phase 3 is established, and IRW-202 is the
+next implementation issue.
 
 The first meaningful vertical slice remains: generate a deterministic synthetic
 CSV, import it through the API, persist accepted invoices, quarantine invalid
