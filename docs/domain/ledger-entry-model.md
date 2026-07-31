@@ -97,7 +97,8 @@ Local evidence:
 - complete gate: 97 tests passed with no failures, errors, or skips, followed by
   executable JAR packaging.
 
-The pull-request CI link is added after the required GitHub check completes.
+Pull-request evidence: [GitHub Actions run 30618370218](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30618370218),
+where the required `Java 21 verify` check passed in 34 seconds.
 
 ## Explicit boundaries
 
