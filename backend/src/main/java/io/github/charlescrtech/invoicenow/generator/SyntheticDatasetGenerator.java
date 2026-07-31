@@ -107,7 +107,11 @@ public final class SyntheticDatasetGenerator {
                 grossTotal = grossTotal.add(grossAmount);
             }
 
-            String documentNumber = formatted("INV-202607-%06d", invoiceIndex);
+            String documentNumber = formatted(
+                    "INV-%04d%02d-%06d",
+                    profile.reportingPeriodStart().getYear(),
+                    profile.reportingPeriodStart().getMonthValue(),
+                    invoiceIndex);
             InvoiceRow invoice = new InvoiceRow(
                     "ERP_ONE",
                     formatted("invoice-%06d", invoiceIndex),

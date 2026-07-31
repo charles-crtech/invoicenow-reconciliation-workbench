@@ -48,7 +48,7 @@ Status values are `pending`, `in progress`, `review`, `complete`, `blocked`, or
 | IRW-104 | Define CSV and JSON source contracts | complete | JSON/CSV v1 schemas, field/normalization rules, equivalent valid fixtures, five stable invalid cases, 101-test local gate, and required Java 21 CI pass |
 | IRW-105 | Build deterministic smoke-data generator | complete | Strict fixed-seed profile, byte-identical contract v1 JSON/CSV bundle, reconciled counts/totals, committed hash evidence, 109-test local gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30621980323) pass |
 | IRW-106 | Add scenario manifest and test-only oracle | complete | Public manifest and checksum-bound test oracle reconcile 413 logical records, source hashes, totals, clean coverage, and zero expected impact; oracle boundary/JAR exclusion, 113-test gate, and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30622890198) pass |
-| IRW-107 | Build demo and performance dataset profiles | pending | Versioned bounded profiles reproduce declared volumes without committing generated datasets |
+| IRW-107 | Build demo and performance dataset profiles | in progress | Versioned bounded profiles reproduce declared volumes without committing generated datasets |
 
 Phase 2 exits only when core monetary and identity invariants are tested, the
 generator is deterministic, and the same source contract can drive the later

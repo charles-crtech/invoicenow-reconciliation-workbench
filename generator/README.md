@@ -23,6 +23,20 @@ and supplier registration values are visibly synthetic. The 9% tax rate and
 `HALF_UP` rounding are fixture-generation rules only; they are not an
 authoritative Singapore tax engine or a claim about production tax treatment.
 
+## Versioned profiles
+
+| Profile | Suppliers | Invoices | Maximum lines per invoice | Intended output |
+| --- | ---: | ---: | ---: | --- |
+| `smoke-v1` | 10 | 100 | 3 | Committed review fixture |
+| `demo-v1` | 250 | 10,000 | 5 | Ignored `data/generated/demo-v1/` |
+| `performance-v1` | 2,000 | 100,000 | 5 | Ignored `data/performance/performance-v1/` |
+
+All profiles use distinct fixed seeds and dataset identifiers. The performance
+profile deliberately exercises the generator's configured 100,000-invoice
+upper bound. Profile tests generate both larger bundles in memory and verify
+declared entity counts, bounded line counts, financial identities, clean
+scenario coverage, manifest identity, and artifact metadata.
+
 ## Generate the smoke bundle
 
 From the repository root on Windows PowerShell with Java 21 installed:
@@ -39,6 +53,26 @@ On a Unix-like shell, use `./mvnw` and line-continuation backslashes. The CLI
 accepts exactly one `--profile` path and one `--output` directory. Invalid or
 out-of-bound profiles fail before generation. Existing named output artifacts
 are replaced atomically where the filesystem supports atomic moves.
+
+Substitute either larger profile and an ignored destination when needed:
+
+```powershell
+# Run from backend/
+.\mvnw.cmd --batch-mode --no-transfer-progress compile `
+  org.codehaus.mojo:exec-maven-plugin:3.6.3:java `
+  "-Dexec.mainClass=io.github.charlescrtech.invoicenow.generator.SyntheticDatasetCli" `
+  "-Dexec.args=--profile=../generator/profiles/demo-v1.json --output=../data/generated/demo-v1"
+
+.\mvnw.cmd --batch-mode --no-transfer-progress compile `
+  org.codehaus.mojo:exec-maven-plugin:3.6.3:java `
+  "-Dexec.mainClass=io.github.charlescrtech.invoicenow.generator.SyntheticDatasetCli" `
+  "-Dexec.args=--profile=../generator/profiles/performance-v1.json --output=../data/performance/performance-v1"
+```
+
+The performance profile can consume substantial memory and disk. Successful
+volume generation proves functional scale only; it is not a latency,
+throughput, or capacity claim. Formal measured benchmarking requires a declared
+environment and belongs to `IRW-801`.
 
 The committed bundle is byte-for-byte reproducible at [data/smoke/v1](../data/smoke/v1):
 
@@ -76,12 +110,12 @@ separation prevents future application logic from reading expected answers.
 This first profile intentionally contains only clean records. Exception
 injection and measured detection belong to `IRW-209`; the public manifest and
 test-only oracle establish the clean baseline without implementing those future
-controls. Demo and performance profiles belong to `IRW-107`. InvoiceNow XML,
-production tax-policy decisions, import behavior, and reconciliation controls
-are outside this generator's current contract.
+controls. InvoiceNow XML, production tax-policy decisions, import behavior, and
+reconciliation controls are outside this generator's current contract.
 
 The executable specification is
 `SyntheticDatasetGeneratorTest` and `ScenarioEvidenceTest`: they prove same-seed
 byte identity, seed sensitivity, counts, references, financial reconciliation,
 encoding, profile bounds, safe writes, manifest hashes and coverage, oracle
-binding, and exact agreement with the committed smoke bundle.
+binding, exact agreement with the committed smoke bundle, and reproduction of
+the declared demo and performance volumes.
