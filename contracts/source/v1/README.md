@@ -86,3 +86,8 @@ From `backend/`:
 The tests parse every JSON metadata/schema/fixture file, verify exact CSV headers
 and valid JSON/CSV equivalence, enforce cross-record references, and assert the
 stable reason code for every indexed invalid fixture.
+
+Local evidence: the focused contract suite passed 4 tests and the complete gate
+passed 101 tests with no failures, errors, or skips, followed by executable JAR
+packaging. Pull-request evidence: [GitHub Actions run 30619218433](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30619218433),
+where the required `Java 21 verify` check passed in 37 seconds.
