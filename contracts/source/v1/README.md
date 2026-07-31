@@ -67,8 +67,9 @@ financial representation.
 2. Preserve the bounded original record before normalization.
 3. Apply the documented normalization rules.
 4. Enforce cross-field and cross-record invariants.
-5. Later import issues decide accepted/rejected/quarantined persistence and stable
-   HTTP error mapping.
+5. CSV import persists accepted aggregates and bounded quarantine evidence using
+   the stable policy in `docs/domain/csv-import-and-quarantine.md`; JSON applies
+   the equivalent boundary in IRW-202.
 
 Schema-valid does not mean reconciled. Declared totals may disagree with line
 sums, and posting dates may fall outside reporting periods; those are valid

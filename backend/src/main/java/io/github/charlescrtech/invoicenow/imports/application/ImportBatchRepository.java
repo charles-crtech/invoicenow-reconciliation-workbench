@@ -15,4 +15,6 @@ public interface ImportBatchRepository {
     Optional<ImportBatch> findByIdempotencyKey(IdempotencyKey key);
 
     Optional<ImportBatch> findByFingerprint(ImportBatchFingerprint fingerprint);
+
+    Optional<ImportBatch> update(ImportBatch batch);
 }

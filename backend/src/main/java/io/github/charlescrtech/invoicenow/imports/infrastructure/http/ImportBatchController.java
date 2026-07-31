@@ -2,6 +2,10 @@ package io.github.charlescrtech.invoicenow.imports.infrastructure.http;
 
 import io.github.charlescrtech.invoicenow.imports.application.ImportBatchRegistration;
 import io.github.charlescrtech.invoicenow.imports.application.ImportBatchService;
+import io.github.charlescrtech.invoicenow.imports.application.CsvImportCoordinator;
+import io.github.charlescrtech.invoicenow.imports.application.CsvImportException;
+import io.github.charlescrtech.invoicenow.imports.application.CsvImportResult;
+import io.github.charlescrtech.invoicenow.imports.application.QuarantineQueryService;
 import io.github.charlescrtech.invoicenow.imports.application.RegisterImportBatchCommand;
 import io.github.charlescrtech.invoicenow.imports.domain.ImportBatch;
 import io.github.charlescrtech.invoicenow.imports.domain.ImportBatchId;
@@ -14,7 +18,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,7 +33,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(path = "/api/v1/import-batches", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,9 +46,16 @@ public class ImportBatchController {
     static final String IDEMPOTENT_REPLAY = "Idempotent-Replay";
 
     private final ImportBatchService service;
+    private final CsvImportCoordinator csvImports;
+    private final QuarantineQueryService quarantine;
 
-    ImportBatchController(ImportBatchService service) {
+    ImportBatchController(
+            ImportBatchService service,
+            CsvImportCoordinator csvImports,
+            QuarantineQueryService quarantine) {
         this.service = service;
+        this.csvImports = csvImports;
+        this.quarantine = quarantine;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -59,6 +76,40 @@ public class ImportBatchController {
     @PreAuthorize("hasAnyRole('ANALYST', 'REVIEWER', 'ADMIN')")
     ImportBatchResponse get(@PathVariable String batchId) {
         return ImportBatchResponse.from(service.get(ImportBatchId.parse(batchId)), false);
+    }
+
+    @PostMapping(path = "/{batchId}/csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ANALYST')")
+    ResponseEntity<ImportBatchResponse> importCsv(
+            @PathVariable String batchId,
+            @RequestPart("file") MultipartFile file) {
+        CsvImportResult result;
+        try (InputStream input = file.getInputStream()) {
+            result = csvImports.importCsv(
+                    ImportBatchId.parse(batchId),
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getSize(),
+                    input);
+        } catch (IOException exception) {
+            throw new CsvImportException("IMPORT_CSV_READ_FAILED", false, "CSV upload could not be opened");
+        }
+        return ResponseEntity.ok()
+                .header(IDEMPOTENT_REPLAY, Boolean.toString(result.replayed()))
+                .body(ImportBatchResponse.from(result.batch(), result.replayed()));
+    }
+
+    @GetMapping("/{batchId}/quarantine")
+    @PreAuthorize("hasAnyRole('ANALYST', 'REVIEWER', 'ADMIN')")
+    QuarantinePageResponse quarantine(
+            @PathVariable String batchId,
+            @RequestParam(defaultValue = "50") @Min(1) @Max(100) int limit,
+            @RequestParam(defaultValue = "0") @Min(0) @Max(500_000) int offset) {
+        QuarantineQueryService.QuarantinePage page = quarantine.get(
+                ImportBatchId.parse(batchId), limit, offset);
+        return new QuarantinePageResponse(
+                page.records().stream().map(QuarantineResponse::from).toList(),
+                page.total());
     }
 
     record RegisterImportBatchRequest(
@@ -125,6 +176,30 @@ public class ImportBatchController {
                     batch.createdAt(),
                     batch.version().orElse(0L),
                     replayed);
+        }
+    }
+
+    record QuarantinePageResponse(List<QuarantineResponse> items, long total) {}
+
+    record QuarantineResponse(
+            String id,
+            long recordNumber,
+            String recordType,
+            String sourcePayloadHash,
+            String reasonCode,
+            String fieldName,
+            Instant createdAt) {
+
+        static QuarantineResponse from(
+                io.github.charlescrtech.invoicenow.imports.domain.QuarantineRecord record) {
+            return new QuarantineResponse(
+                    record.id().toString(),
+                    record.recordNumber(),
+                    record.recordType(),
+                    record.sourcePayloadHash().value(),
+                    record.reason().name(),
+                    record.fieldName(),
+                    record.createdAt());
         }
     }
 }

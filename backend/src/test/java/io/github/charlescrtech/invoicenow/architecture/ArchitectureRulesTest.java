@@ -115,6 +115,20 @@ class ArchitectureRulesTest {
     }
 
     @Test
+    void importsMustUseModuleServicesInsteadOfForeignRepositories() {
+        for (String repository : java.util.List.of(
+                "SupplierRepository", "InvoiceRepository", "LedgerEntryRepository")) {
+            noClasses()
+                    .that()
+                    .resideInAPackage(BASE_PACKAGE + ".imports..")
+                    .should()
+                    .dependOnClassesThat()
+                    .haveSimpleName(repository)
+                    .check(productionClasses);
+        }
+    }
+
+    @Test
     void persistenceEntitiesMustNotBePublicApiTypes() {
         ArchRule rule = noClasses()
                 .that()

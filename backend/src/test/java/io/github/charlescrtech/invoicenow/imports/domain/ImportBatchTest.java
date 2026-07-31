@@ -112,6 +112,48 @@ class ImportBatchTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void registeredBatchCanStartAndCompleteWithReconciledCounts() {
+        ImportBatch processing = batch("import-key-0001", "a".repeat(64))
+                .start(CREATED.plusSeconds(1));
+        ImportBatch completed = processing.complete(10, 2, 3, CREATED.plusSeconds(2));
+
+        assertThat(processing.status()).isEqualTo(ImportBatchStatus.PROCESSING);
+        assertThat(completed.status()).isEqualTo(ImportBatchStatus.COMPLETED);
+        assertThat(completed.acceptedCount()).isEqualTo(10);
+        assertThat(completed.rejectedCount()).isEqualTo(2);
+        assertThat(completed.quarantinedCount()).isEqualTo(3);
+        assertThat(completed.failureCode()).isEmpty();
+    }
+
+    @Test
+    void processingBatchCanFailWithoutClaimingPartialAcceptedOrQuarantinedRows() {
+        ImportBatch failed = batch("import-key-0001", "a".repeat(64))
+                .start(CREATED.plusSeconds(1))
+                .fail("IMPORT_TRANSACTION_FAILED", 7, CREATED.plusSeconds(2));
+
+        assertThat(failed.status()).isEqualTo(ImportBatchStatus.FAILED);
+        assertThat(failed.acceptedCount()).isZero();
+        assertThat(failed.rejectedCount()).isEqualTo(7);
+        assertThat(failed.quarantinedCount()).isZero();
+        assertThat(failed.failureCode()).contains("IMPORT_TRANSACTION_FAILED");
+    }
+
+    @Test
+    void lifecycleTransitionsRejectWrongStatesAndTimeOrder() {
+        ImportBatch registered = batch("import-key-0001", "a".repeat(64));
+        ImportBatch processing = registered.start(CREATED.plusSeconds(1));
+
+        assertThatThrownBy(() -> registered.complete(1, 0, 0, CREATED.plusSeconds(2)))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> registered.fail("IMPORT_FAILED", 1, CREATED.plusSeconds(2)))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> processing.start(CREATED.plusSeconds(2)))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> processing.complete(1, 0, 0, CREATED))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private static ImportBatch batch(String key, String sourceHash) {
         return batch(key, sourceHash, "smoke-001", "dataset.json");
     }

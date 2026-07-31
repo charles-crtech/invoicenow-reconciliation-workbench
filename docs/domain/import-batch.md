@@ -55,7 +55,9 @@ than committing credentials.
 
 ## Current boundary
 
-The endpoint registers metadata and an upload-adapter-produced checksum. It does
-not accept raw bytes, parse files, or claim that `REQ-001` is complete. CSV
-streaming/quarantine is `IRW-201`, JSON parsing/quarantine is `IRW-202`, and
-durable asynchronous progress is `IRW-203`.
+Registration remains metadata-only. The separate analyst-only CSV operation now
+streams one exact contract-v1 artifact, verifies it against the registration,
+persists accepted domain records, and retains safe quarantine evidence under the
+[CSV import policy](csv-import-and-quarantine.md). JSON parsing is `IRW-202`, and
+durable asynchronous progress is `IRW-203`; `REQ-001` therefore remains in
+progress rather than complete.

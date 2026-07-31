@@ -133,6 +133,75 @@ public final class ImportBatch {
                 && sourceSizeBytes == other.sourceSizeBytes;
     }
 
+    public ImportBatch start(Instant startedAt) {
+        if (status != ImportBatchStatus.REGISTERED) {
+            throw new IllegalStateException("only a registered import batch can start");
+        }
+        return copy(ImportBatchStatus.PROCESSING, 0, 0, 0, null, startedAt, null);
+    }
+
+    public ImportBatch complete(
+            long acceptedCount,
+            long rejectedCount,
+            long quarantinedCount,
+            Instant completedAt) {
+        if (status != ImportBatchStatus.PROCESSING) {
+            throw new IllegalStateException("only a processing import batch can complete");
+        }
+        return copy(
+                ImportBatchStatus.COMPLETED,
+                acceptedCount,
+                rejectedCount,
+                quarantinedCount,
+                null,
+                startedAt,
+                completedAt);
+    }
+
+    public ImportBatch fail(String failureCode, long rejectedCount, Instant completedAt) {
+        if (status != ImportBatchStatus.PROCESSING) {
+            throw new IllegalStateException("only a processing import batch can fail");
+        }
+        return copy(
+                ImportBatchStatus.FAILED,
+                0,
+                rejectedCount,
+                0,
+                Objects.requireNonNull(failureCode, "failure code must not be null"),
+                startedAt,
+                completedAt);
+    }
+
+    private ImportBatch copy(
+            ImportBatchStatus nextStatus,
+            long nextAcceptedCount,
+            long nextRejectedCount,
+            long nextQuarantinedCount,
+            String nextFailureCode,
+            Instant nextStartedAt,
+            Instant nextCompletedAt) {
+        return new ImportBatch(
+                id,
+                datasetId,
+                contractVersion,
+                sourceType,
+                sourceName,
+                contentType,
+                sourceSizeBytes,
+                sourceSha256,
+                manifestSha256,
+                idempotencyKey,
+                nextStatus,
+                nextAcceptedCount,
+                nextRejectedCount,
+                nextQuarantinedCount,
+                nextFailureCode,
+                createdAt,
+                nextStartedAt,
+                nextCompletedAt,
+                version);
+    }
+
     public ImportBatchId id() { return id; }
     public String datasetId() { return datasetId; }
     public String contractVersion() { return contractVersion; }

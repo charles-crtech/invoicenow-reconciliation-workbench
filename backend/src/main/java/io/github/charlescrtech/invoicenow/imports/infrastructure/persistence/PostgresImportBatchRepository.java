@@ -101,6 +101,29 @@ class PostgresImportBatchRepository implements ImportBatchRepository {
                 fingerprint.manifestSha256().value()));
     }
 
+    @Override
+    public Optional<ImportBatch> update(ImportBatch batch) {
+        long expectedVersion = batch.version().orElseThrow(
+                () -> new IllegalArgumentException("a persisted batch version is required"));
+        int updated = jdbcTemplate.update(
+                """
+                UPDATE app.import_batches
+                SET status = ?, accepted_count = ?, rejected_count = ?, quarantined_count = ?,
+                    failure_code = ?, started_at = ?, completed_at = ?, version = version + 1
+                WHERE id = ? AND version = ?
+                """,
+                batch.status().name(),
+                batch.acceptedCount(),
+                batch.rejectedCount(),
+                batch.quarantinedCount(),
+                batch.failureCode().orElse(null),
+                batch.startedAt().map(Timestamp::from).orElse(null),
+                batch.completedAt().map(Timestamp::from).orElse(null),
+                batch.id().value(),
+                expectedVersion);
+        return updated == 1 ? findById(batch.id()) : Optional.empty();
+    }
+
     private static Optional<ImportBatch> first(List<ImportBatch> batches) {
         return batches.stream().findFirst();
     }

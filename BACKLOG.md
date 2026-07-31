@@ -59,7 +59,7 @@ import pipeline without hidden test-only data.
 | ID | Issue | Status | Exit evidence |
 |---|---|---|---|
 | IRW-200 | Implement import-batch API and idempotency | complete | Atomic key/checksum replay and conflicts, protected APIs, V5 constraints, and exact-byte hash boundaries pass the 136-test local gate and required [Java 21 CI](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30625169287) |
-| IRW-201 | Implement bounded CSV parser and quarantine | pending | Streaming limits, stable reason codes, rollback, and accepted/rejected/quarantined reconciliation tests pass |
+| IRW-201 | Implement bounded CSV parser and quarantine | in progress | Streaming limits, stable reason codes, rollback, and accepted/rejected/quarantined reconciliation tests pass |
 | IRW-202 | Implement bounded JSON parser and quarantine | pending | Versioned JSON parsing enforces the same safety, lineage, and count invariants as CSV |
 | IRW-203 | Add asynchronous job state and progress | pending | Durable job states, safe failures, restart behaviour, and status-resource tests pass |
 | IRW-204 | Implement rule definitions and versioning | pending | Historical executions retain immutable rule versions and source citations |
