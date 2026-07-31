@@ -1,6 +1,7 @@
 package io.github.charlescrtech.invoicenow.imports.domain;
 
 public enum QuarantineReason {
+    CONTRACT_UNKNOWN_FIELD,
     CONTRACT_REQUIRED_FIELD,
     CONTRACT_VALUE_INVALID,
     CONTRACT_SYNTHETIC_ID_REQUIRED,

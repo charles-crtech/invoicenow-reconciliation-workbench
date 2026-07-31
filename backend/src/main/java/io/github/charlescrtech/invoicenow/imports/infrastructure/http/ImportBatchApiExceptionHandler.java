@@ -3,6 +3,7 @@ package io.github.charlescrtech.invoicenow.imports.infrastructure.http;
 import io.github.charlescrtech.invoicenow.imports.application.ImportBatchNotFoundException;
 import io.github.charlescrtech.invoicenow.imports.application.ImportIdempotencyConflictException;
 import io.github.charlescrtech.invoicenow.imports.application.CsvImportException;
+import io.github.charlescrtech.invoicenow.imports.application.JsonImportException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
@@ -49,10 +50,10 @@ class ImportBatchApiExceptionHandler {
             case "IMPORT_BATCH_STATE_CONFLICT" -> HttpStatus.CONFLICT;
             case "IMPORT_TRANSACTION_FAILED" -> HttpStatus.INTERNAL_SERVER_ERROR;
             case "IMPORT_CSV_RECORD_TOO_LARGE", "IMPORT_CSV_TOO_MANY_RECORDS" ->
-                    HttpStatus.PAYLOAD_TOO_LARGE;
+                    HttpStatus.CONTENT_TOO_LARGE;
             case "IMPORT_SOURCE_METADATA_MISMATCH", "IMPORT_SOURCE_SIZE_MISMATCH",
                     "IMPORT_SOURCE_CHECKSUM_MISMATCH" -> HttpStatus.BAD_REQUEST;
-            default -> HttpStatus.UNPROCESSABLE_ENTITY;
+            default -> HttpStatus.UNPROCESSABLE_CONTENT;
         };
         return problem(
                 status,
@@ -62,13 +63,32 @@ class ImportBatchApiExceptionHandler {
                 request);
     }
 
+    @ExceptionHandler(JsonImportException.class)
+    ProblemDetail jsonImport(JsonImportException exception, HttpServletRequest request) {
+        HttpStatus status = switch (exception.code()) {
+            case "IMPORT_BATCH_STATE_CONFLICT" -> HttpStatus.CONFLICT;
+            case "IMPORT_TRANSACTION_FAILED" -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case "IMPORT_JSON_RECORD_TOO_LARGE", "IMPORT_JSON_TOO_MANY_RECORDS",
+                    "IMPORT_JSON_LIMIT_EXCEEDED" -> HttpStatus.CONTENT_TOO_LARGE;
+            case "IMPORT_SOURCE_METADATA_MISMATCH", "IMPORT_SOURCE_SIZE_MISMATCH",
+                    "IMPORT_SOURCE_CHECKSUM_MISMATCH" -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.UNPROCESSABLE_CONTENT;
+        };
+        return problem(
+                status,
+                exception.code(),
+                "JSON import rejected",
+                "The JSON source could not be accepted under the registered source contract.",
+                request);
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     ProblemDetail uploadTooLarge(MaxUploadSizeExceededException exception, HttpServletRequest request) {
         return problem(
-                HttpStatus.PAYLOAD_TOO_LARGE,
+                HttpStatus.CONTENT_TOO_LARGE,
                 "IMPORT_FILE_TOO_LARGE",
-                "CSV upload rejected",
-                "The CSV source exceeds the configured upload bound.",
+                "Source upload rejected",
+                "The source exceeds the configured upload bound.",
                 request);
     }
 

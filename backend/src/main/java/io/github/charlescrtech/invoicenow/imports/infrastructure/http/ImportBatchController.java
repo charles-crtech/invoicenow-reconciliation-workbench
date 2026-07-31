@@ -5,6 +5,9 @@ import io.github.charlescrtech.invoicenow.imports.application.ImportBatchService
 import io.github.charlescrtech.invoicenow.imports.application.CsvImportCoordinator;
 import io.github.charlescrtech.invoicenow.imports.application.CsvImportException;
 import io.github.charlescrtech.invoicenow.imports.application.CsvImportResult;
+import io.github.charlescrtech.invoicenow.imports.application.JsonImportCoordinator;
+import io.github.charlescrtech.invoicenow.imports.application.JsonImportException;
+import io.github.charlescrtech.invoicenow.imports.application.JsonImportResult;
 import io.github.charlescrtech.invoicenow.imports.application.QuarantineQueryService;
 import io.github.charlescrtech.invoicenow.imports.application.RegisterImportBatchCommand;
 import io.github.charlescrtech.invoicenow.imports.domain.ImportBatch;
@@ -47,15 +50,39 @@ public class ImportBatchController {
 
     private final ImportBatchService service;
     private final CsvImportCoordinator csvImports;
+    private final JsonImportCoordinator jsonImports;
     private final QuarantineQueryService quarantine;
 
     ImportBatchController(
             ImportBatchService service,
             CsvImportCoordinator csvImports,
+            JsonImportCoordinator jsonImports,
             QuarantineQueryService quarantine) {
         this.service = service;
         this.csvImports = csvImports;
+        this.jsonImports = jsonImports;
         this.quarantine = quarantine;
+    }
+
+    @PostMapping(path = "/{batchId}/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ANALYST')")
+    ResponseEntity<ImportBatchResponse> importJson(
+            @PathVariable String batchId,
+            @RequestPart("file") MultipartFile file) {
+        JsonImportResult result;
+        try (InputStream input = file.getInputStream()) {
+            result = jsonImports.importJson(
+                    ImportBatchId.parse(batchId),
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getSize(),
+                    input);
+        } catch (IOException exception) {
+            throw new JsonImportException("IMPORT_JSON_READ_FAILED", false, "JSON upload could not be opened");
+        }
+        return ResponseEntity.ok()
+                .header(IDEMPOTENT_REPLAY, Boolean.toString(result.replayed()))
+                .body(ImportBatchResponse.from(result.batch(), result.replayed()));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

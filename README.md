@@ -8,7 +8,7 @@ The workbench will ingest synthetic invoice, procurement, ledger, and Peppol-sty
 
 ## Current status
 
-Import-pipeline phase: the verified Java 21/Spring Boot and PostgreSQL foundation includes fixed-precision domain aggregates, versioned JSON/CSV source contracts, and deterministic smoke, demo, and functional-scale data profiles. The import module provides constrained batch registration, atomic checksum/idempotency decisions, role-protected operations, dependency-free bounded CSV streaming, transactional accepted-record persistence, and safe durable quarantine. Equivalent JSON ingestion remains the next slice.
+Import-pipeline phase: the verified Java 21/Spring Boot and PostgreSQL foundation includes fixed-precision domain aggregates, versioned JSON/CSV source contracts, and deterministic smoke, demo, and functional-scale data profiles. The import module provides constrained batch registration, atomic checksum/idempotency decisions, role-protected operations, bounded streaming for both serializations, deterministic source lineage, transactional accepted-record persistence, and safe durable quarantine. Asynchronous job progress is the next slice.
 
 Tracked foundation work:
 

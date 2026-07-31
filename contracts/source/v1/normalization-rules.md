@@ -20,7 +20,16 @@ only the terminating LF or CRLF. The hash is calculated before UTF-8 decoding,
 CSV unquoting, or normalization. A reconstructed multi-line invoice hash uses
 the file-order sequence of those record bytes, each prefixed by its unsigned
 eight-byte big-endian length; this prevents ambiguous concatenation. IRW-202
-separately defines the JSON logical-record canonicalization scope.
+defines JSON logical records as deterministic compact UTF-8 JSON. Known object
+properties occur in contract order, unknown properties follow in lexical order,
+array order is preserved, and values use their lossless parsed JSON-tree
+representation. Supplier and ledger hashes cover their complete objects. An
+invoice hash covers the complete invoice object including its ordered lines;
+each line also receives its own canonical evidence hash. Insignificant source
+whitespace and object-property order do not change these logical hashes, while
+the batch checksum remains over the exact uploaded bytes. Each canonical record
+is limited to 65,536 UTF-8 bytes. The full policy and parser bounds are in
+`docs/domain/json-import-and-quarantine.md`.
 
 ## String normalization
 

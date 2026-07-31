@@ -164,6 +164,63 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /api/v1/import-batches/{batchId}/json:
+    post:
+      operationId: importJsonDataset
+      summary: Parse one registered source-contract v1 JSON dataset
+      description: >-
+        Streams dataset.json with closed properties and bounded record trees after
+        verifying its registered name, media type, size, dataset, version, and
+        exact-byte SHA-256. Completed replay performs no parsing or writes.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Completed import batch or completed replay
+          headers:
+            Idempotent-Replay:
+              schema: { type: string, enum: ["true", "false"] }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportBatch"
+        "400":
+          description: Upload metadata, size, or checksum differs from registration
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401": { description: Authentication required }
+        "403": { description: Analyst role required }
+        "404": { description: Import batch not found }
+        "409":
+          description: Batch is already processing or terminal without completed replay
+          x-error-code: IMPORT_BATCH_STATE_CONFLICT
+        "413":
+          description: File, token, nesting, logical-record, or source-unit bound exceeded
+        "422":
+          description: Fatal source-contract structure, syntax, or encoding failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api/v1/import-batches/{batchId}/quarantine:
     get:
       operationId: listImportQuarantine
