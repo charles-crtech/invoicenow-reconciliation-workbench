@@ -1,6 +1,6 @@
 # Supplier Aggregate and Persistence
 
-Status: Implemented under `IRW-101`; local verification passed, pull-request CI pending
+Status: Implemented and verified under `IRW-101`
 
 ## Purpose
 
@@ -95,8 +95,9 @@ Local focused evidence:
 The complete local repository gate passed 51 tests with no failures, errors, or
 skips. This includes four production architecture rules, both Flyway migrations,
 Hibernate schema validation, repository versioning, the original health/security
-smoke checks, and executable JAR packaging. The independent CI run is recorded
-after the pull-request check passes.
+smoke checks, and executable JAR packaging.
+
+Pull-request evidence: [GitHub Actions run 30615989220](https://github.com/charles-crtech/invoicenow-reconciliation-workbench/actions/runs/30615989220), where `Java 21 verify` passed in 34 seconds.
 
 ## Explicit boundaries
 

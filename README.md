@@ -8,7 +8,7 @@ The workbench will ingest synthetic invoice, procurement, ledger, and Peppol-sty
 
 ## Current status
 
-Domain-foundation phase: the Java 21/Spring Boot backend, PostgreSQL/Flyway baseline, public health contract, Testcontainers smoke tests, and required CI workflow are established and verified. Fixed-precision money, typed core identifiers, and half-open reporting-period primitives are implemented and tested; the supplier aggregate is next.
+Domain-foundation phase: the Java 21/Spring Boot backend, PostgreSQL/Flyway baseline, public health contract, Testcontainers smoke tests, and required CI workflow are established and verified. Fixed-precision money, typed core identifiers, reporting periods, and the supplier aggregate with constrained PostgreSQL persistence are implemented and tested; invoice and invoice-line aggregates are next.
 
 Tracked foundation work:
 
