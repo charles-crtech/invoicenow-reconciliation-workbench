@@ -33,6 +33,7 @@ class ImportBatchIntegrationTest {
 
     @BeforeEach
     void clearImportBatches() {
+        jdbcTemplate.update("DELETE FROM app.import_quarantine");
         jdbcTemplate.update("DELETE FROM app.import_batches");
     }
 

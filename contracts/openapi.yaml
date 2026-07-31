@@ -107,6 +107,91 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /api/v1/import-batches/{batchId}/csv:
+    post:
+      operationId: importCsvArtifact
+      summary: Parse one registered source-contract v1 CSV artifact
+      description: >-
+        Streams exactly suppliers.csv, invoices.csv, or ledger_entries.csv after
+        verifying its registered name, type, size, dataset, version, and SHA-256.
+        Completed replay returns the prior batch without reading or writing rows.
+      security:
+        - basicAuth: []
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Completed import batch or completed replay
+          headers:
+            Idempotent-Replay:
+              schema: { type: string, enum: ["true", "false"] }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImportBatch"
+        "400":
+          description: Upload metadata, size, or checksum differs from registration
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401": { description: Authentication required }
+        "403": { description: Analyst role required }
+        "404": { description: Import batch not found }
+        "409":
+          description: Batch is already processing or terminal without completed replay
+          x-error-code: IMPORT_BATCH_STATE_CONFLICT
+        "413":
+          description: File, logical record, or record-count bound exceeded
+        "422":
+          description: Fatal source-contract syntax or encoding failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/import-batches/{batchId}/quarantine:
+    get:
+      operationId: listImportQuarantine
+      summary: List bounded quarantine metadata without original payloads
+      security:
+        - basicAuth: []
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, maximum: 500000, default: 0 }
+      responses:
+        "200":
+          description: Deterministically ordered quarantine metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuarantinePage"
+        "400": { description: Invalid bounded query }
+        "401": { description: Authentication required }
+        "403": { description: Import-batch read role required }
+        "404": { description: Import batch not found }
 components:
   securitySchemes:
     basicAuth:
@@ -196,6 +281,37 @@ components:
         createdAt: { type: string, format: date-time }
         version: { type: integer, format: int64, minimum: 0 }
         replayed: { type: boolean }
+    QuarantinePage:
+      type: object
+      additionalProperties: false
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/QuarantineRecord"
+        total: { type: integer, format: int64, minimum: 0 }
+    QuarantineRecord:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - recordNumber
+        - recordType
+        - sourcePayloadHash
+        - reasonCode
+        - createdAt
+      properties:
+        id: { type: string, format: uuid }
+        recordNumber: { type: integer, format: int64, minimum: 1 }
+        recordType: { type: string, pattern: "^[A-Z][A-Z0-9_]{2,31}$" }
+        sourcePayloadHash: { type: string, pattern: "^[0-9a-f]{64}$" }
+        reasonCode: { type: string, pattern: "^[A-Z][A-Z0-9_]{2,63}$" }
+        fieldName:
+          type: [string, "null"]
+          pattern: "^[a-z][a-z0-9_]{0,63}$"
+        createdAt: { type: string, format: date-time }
     Problem:
       type: object
       required: [type, title, status, detail, code, requestId]

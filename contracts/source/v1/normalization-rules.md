@@ -14,8 +14,13 @@ The source cannot truthfully provide a self-hash without a circular contract.
 
 IRW-200 defines the batch-level checksum as SHA-256 over the exact uploaded
 artifact bytes before decoding or normalization; no line-ending, whitespace, or
-JSON canonicalization occurs. IRW-201 and IRW-202 separately define the exact
-captured logical-record bytes used for `source_payload_hash`.
+JSON canonicalization occurs. IRW-201 defines a CSV logical-record hash over the
+exact bytes from the first byte of a record through its final byte, excluding
+only the terminating LF or CRLF. The hash is calculated before UTF-8 decoding,
+CSV unquoting, or normalization. A reconstructed multi-line invoice hash uses
+the file-order sequence of those record bytes, each prefixed by its unsigned
+eight-byte big-endian length; this prevents ambiguous concatenation. IRW-202
+separately defines the JSON logical-record canonicalization scope.
 
 ## String normalization
 

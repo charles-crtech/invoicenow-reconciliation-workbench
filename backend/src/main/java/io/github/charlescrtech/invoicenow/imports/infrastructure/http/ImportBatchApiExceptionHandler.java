@@ -2,6 +2,7 @@ package io.github.charlescrtech.invoicenow.imports.infrastructure.http;
 
 import io.github.charlescrtech.invoicenow.imports.application.ImportBatchNotFoundException;
 import io.github.charlescrtech.invoicenow.imports.application.ImportIdempotencyConflictException;
+import io.github.charlescrtech.invoicenow.imports.application.CsvImportException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice(assignableTypes = ImportBatchController.class)
 class ImportBatchApiExceptionHandler {
@@ -39,10 +43,41 @@ class ImportBatchApiExceptionHandler {
                 request);
     }
 
+    @ExceptionHandler(CsvImportException.class)
+    ProblemDetail csvImport(CsvImportException exception, HttpServletRequest request) {
+        HttpStatus status = switch (exception.code()) {
+            case "IMPORT_BATCH_STATE_CONFLICT" -> HttpStatus.CONFLICT;
+            case "IMPORT_TRANSACTION_FAILED" -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case "IMPORT_CSV_RECORD_TOO_LARGE", "IMPORT_CSV_TOO_MANY_RECORDS" ->
+                    HttpStatus.PAYLOAD_TOO_LARGE;
+            case "IMPORT_SOURCE_METADATA_MISMATCH", "IMPORT_SOURCE_SIZE_MISMATCH",
+                    "IMPORT_SOURCE_CHECKSUM_MISMATCH" -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.UNPROCESSABLE_ENTITY;
+        };
+        return problem(
+                status,
+                exception.code(),
+                "CSV import rejected",
+                "The CSV source could not be accepted under the registered source contract.",
+                request);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    ProblemDetail uploadTooLarge(MaxUploadSizeExceededException exception, HttpServletRequest request) {
+        return problem(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "IMPORT_FILE_TOO_LARGE",
+                "CSV upload rejected",
+                "The CSV source exceeds the configured upload bound.",
+                request);
+    }
+
     @ExceptionHandler({
         MethodArgumentNotValidException.class,
         MissingRequestHeaderException.class,
         HttpMessageNotReadableException.class,
+        MissingServletRequestPartException.class,
+        HandlerMethodValidationException.class,
         ConstraintViolationException.class,
         IllegalArgumentException.class
     })
